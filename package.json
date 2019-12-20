@@ -1,0 +1,47 @@
+{
+  "name": "mollie-crowdin",
+  "version": "1.0.0",
+  "description": "Mollie scripts for handling i18n with Crowdin",
+  "main": "lib/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "bin": {
+    "mollie-crowdin": "bin/mollie-i18n"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "clean": "rm -rf ./lib",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "build:check": "tsc -p tsconfig.build.json --noEmit",
+    "formatjs": "./node_modules/.bin/formatjs"
+  },
+  "dependencies": {
+    "@formatjs/cli": "^1.1.12",
+    "axios": "^0.19.0",
+    "chalk": "^3.0.0",
+    "commander": "^4.0.1",
+    "dotenv": "^8.2.0",
+    "form-data": "^3.0.0",
+    "glob": "^7.1.6",
+    "mkdirp": "^0.5.1",
+    "sanitize-html": "^1.20.1",
+    "shelljs": "^0.8.3"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^12.12.17",
+    "@types/sanitize-html": "^1.20.2",
+    "@types/shelljs": "^0.8.6",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.3"
+  },
+  "author": "Angelo Abdoelsamath"
+}

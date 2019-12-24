@@ -8,7 +8,7 @@ Add following variables to your `.env` file:
 CROWDIN_KEY
 CROWDIN_PROJECT_NAME
 
-Add following scripts to package.json:
+Add the following scripts to `package.json`:
 "crowdin:download": "mollie-crowdin download",
 "crowdin:upload": "mollie-crowdin upload '<glob directory pattern>', // i.e. mollie-crowdin upload './src/**/!(*.test).{ts,tsx}'
 ```

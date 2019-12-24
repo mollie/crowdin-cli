@@ -1,7 +1,7 @@
 
 # `mollie-crowdin-cli`
 
-This CLI is used for syncing Mollie application translations with Crowdin. It uses formatjs-cli to extract the messages from the application.
+This CLI is used for syncing Mollie application translations with Crowdin. It uses `formatjs-cli` to extract the messages from the application.
 
 ```shell
 Add following variables to your .env file:

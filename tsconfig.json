@@ -1,3 +1,4 @@
+
 {
   "compilerOptions": {
     "target": "es2017",
@@ -11,8 +12,8 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "strict": true,
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
-  "exclude": ["lib", "node_modules"],
+  "exclude": ["lib", "node_modules", "**/*.test.ts"],
   "include": ["src/**/*.ts"]
 }

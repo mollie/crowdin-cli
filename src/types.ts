@@ -1,4 +1,4 @@
-import { LocaleLanguageMap } from './config';
+import LocaleLanguageMap from './utils/localeLanguageMap';
 export interface Codes {
   0: `Unknown internal error'.`
   1: `Requested project doesn't exist or the API key is invalid`
@@ -88,4 +88,20 @@ export interface Messages {
     message: string;
     description? :string,
   }
+}
+
+export type Locales = 'de-DE' | 'es-ES' | 'fr-FE' | 'fr-BE' | 'nl-NL' | 'nl-BE' | 'en-US';
+export type Languages = 'de' | 'es-ES' | 'fr' | 'fr-BE' | 'nl' | 'nl-BE' | 'en-US';
+
+export interface Config {
+  BIN: string;
+  BRANCH: string;
+  CROWDIN_KEY: string;
+  CROWDIN_PROJECT_NAME: string;
+  INTL_DIR: string;
+  MESSAGES_DIR: string;
+  MESSAGES_PATTERN: string;
+  NODE_EXEC: string;
+  TRANSLATIONS_DIR: string;
+  TRANSLATIONS_FILE: string;
 }

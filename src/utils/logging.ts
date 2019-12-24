@@ -1,10 +1,12 @@
 import chalk from 'chalk';
 
-const error = (message: string) => console.log(`${chalk.black.bgRed(` ERROR `)} ${message}`);
+const log = process.env.NODE_ENV !== 'test' ? console.log : () => {};
 
-const success = (message: string) => console.log(`${chalk.black.bgGreen(` SUCCESS `)} ${message}`);
+const error = (message: string) => log(`${chalk.black.bgRed(` ERROR `)} ${message}`);
 
-const info = (title: string, message: string) => console.log(`${chalk.black.bgWhite(` ${title} `)} ${message}`);
+const success = (message: string) => log(`${chalk.black.bgGreen(` SUCCESS `)} ${message}`);
+
+const info = (title: string, message: string) => log(`${chalk.black.bgWhite(` ${title} `)} ${message}`);
 
 export default {
   error,

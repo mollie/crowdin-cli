@@ -6,8 +6,10 @@ import fs from 'fs';
 
 import shell from 'shelljs';
 
-import config, { LocaleLanguageMap, Languages, Locales } from './config';
+import config from './config';
+import { Locales } from './types';
 import log from './utils/logging';
+import LocaleLanguageMap from './utils/localeLanguageMap';
 
 export default async () => {
   /* sync source file to prevent branching issues */
@@ -21,7 +23,9 @@ export default async () => {
 
   mkdirpSync(config.TRANSLATIONS_DIR);
 
-  const updateResponse = await updateFile(config.BRANCH);
+  const file = fs.createReadStream(config.TRANSLATIONS_FILE);
+
+  const updateResponse = await updateFile(config.BRANCH, file);
 
   log.info('', 'Syncing source.json');
 
@@ -44,6 +48,7 @@ export default async () => {
   await Promise.all(
     Object.keys(LocaleLanguageMap).map((locale, i) => {
       const translations = exportFileResponses[i].data;
+      if (translations.error) { return; }
       // @ts-ignore
       const destination = `${config.TRANSLATIONS_DIR}/${locale}.js`;
       const jsData = `// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.\nexport default ${JSON.stringify(translations)};`;

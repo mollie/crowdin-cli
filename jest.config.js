@@ -3,7 +3,7 @@ module.exports = {
   roots: ['<rootDir>'],
   testEnvironment: 'node',
   transform: {
-    '^.+\\.ts?$': 'ts-jest'
+    '^.+\.ts?$': 'ts-jest'
   },
   setupFiles: ['./tests/setup.js'],
   verbose: true,

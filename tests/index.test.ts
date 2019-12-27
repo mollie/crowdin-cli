@@ -5,6 +5,7 @@ import FormData from 'form-data';
 import fs from 'fs';
 import program from '../src/cli';
 import config from '../src/config';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import expected from './fixtures/expected.json';
 
@@ -37,6 +38,7 @@ const axiosGet = jest.fn((url) => {
   });
 });
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 axios.get = axiosGet;
 
@@ -50,6 +52,7 @@ const axiosPost = jest.fn(() => Promise.resolve({
   }
 }));
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 axios.post = axiosPost;
 
@@ -58,10 +61,13 @@ axios.post = axiosPost;
     let newProgram: (argv: string[]) => Promise<void>;
     let mockExit: jest.Mock;
 
+    expect.assertions(1);
+
     beforeEach(() => {
       jest.resetModules();
       delete process.env[key];
       mockExit = jest.fn();
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       process.exit = mockExit;
       /* have to use a new instance of the program, because process.env is already passed through
@@ -86,6 +92,7 @@ describe('mollie-crowdin cli', () => {
   })
 
   it('collects all the messages from a component and creates a english.source.json', async () => {
+    expect.assertions(1);
     await program(['node', 'test', 'collect', './tests/fixtures/**.tsx']);
     expect(
       fs.existsSync(`${config.INTL_DIR}/english.source.json`)
@@ -93,11 +100,14 @@ describe('mollie-crowdin cli', () => {
   })
 
   it('outputs english.source.json that matches the expected json file', async () => {
+    expect.assertions(1);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const sourceJson = require(`${config.INTL_DIR}/english.source.json`);
     expect(sourceJson).toEqual(expected);
   });
 
   it('creates a directory on crowdin and uploads the collected messages', async () => {
+    expect.assertions(2);
     await program(['node', 'test', 'upload', './tests/fixtures/**.tsx']);
 
     expect(axiosGet).toHaveBeenCalledWith(`${BASE_URL}/add-directory`, {
@@ -122,6 +132,7 @@ describe('mollie-crowdin cli', () => {
   });
 
   it('downloads translated messages from the specified branch from crowdin', async () => {
+    expect.assertions(1);
     await program(['node', 'test', 'download']);
 
     const file = fs.readFileSync(`${config.TRANSLATIONS_DIR}/nl-NL.js`).toString();

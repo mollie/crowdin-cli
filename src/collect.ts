@@ -44,6 +44,11 @@ export default async (glob: string) => {
               process.exit(1);
             }
 
+            if (!defaultMessage) {
+              log.error(`No default message supplied for: ${id}`);
+              process.exit(1);
+            }
+
             // Chrome JSON format
             collection[id] = { message: defaultMessage, description };
           }

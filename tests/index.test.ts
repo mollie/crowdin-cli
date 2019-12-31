@@ -11,9 +11,6 @@ import expected from './fixtures/expected.json';
 
 jest.mock('axios');
 jest.mock('form-data');
-jest.mock('../src/utils/localeLanguageMap.ts', () => ({
-  'nl-NL': 'nl',
-}));
 
 const axiosGet = jest.fn((url) => {
   /**
@@ -56,7 +53,7 @@ const axiosPost = jest.fn(() => Promise.resolve({
 // @ts-ignore
 axios.post = axiosPost;
 
-['CROWDIN_KEY', 'CROWDIN_PROJECT_NAME'].forEach(key => {
+['CROWDIN_LANGUAGES', 'CROWDIN_KEY', 'CROWDIN_PROJECT_NAME'].forEach(key => {
   describe(`cli config`, () => {
     let newProgram: (argv: string[]) => Promise<void>;
     let mockExit: jest.Mock;
@@ -77,14 +74,16 @@ axios.post = axiosPost;
       newProgram = require('../src/cli').default;
     });
 
+    afterEach(() => {
+      require('./setup');
+    })
+
     it(`should crash when process.env.${key} is not set`, async () => {
       await newProgram(['node', 'test', 'collect', './tests/fixtures/**.tsx']);
       expect(mockExit).toHaveBeenCalledWith(1);
     });
-
   });
 });
-
 
 describe('mollie-crowdin cli', () => {
   afterEach(() => {

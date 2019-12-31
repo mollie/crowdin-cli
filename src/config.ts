@@ -31,8 +31,9 @@ const WORKING_DIR =
 const INTL_DIR = `${WORKING_DIR}/intl`;
 const MESSAGES_DIR = `${WORKING_DIR}/messages`;
 
-// const projectLanguages: Language[] = (process.env.CROWDIN_LANGUAGES.split(',') as Language[]);
-const projectLanguages: Language[] = ["nl"];
+const projectLanguages: Language[] = process.env.CROWDIN_LANGUAGES.split(
+  ","
+) as Language[];
 
 projectLanguages.forEach(lang => {
   if (!LANGUAGES.includes(lang)) {

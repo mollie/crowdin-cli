@@ -1,0 +1,71 @@
+{
+  "name": "@mollie/crowdin-cli",
+  "version": "1.0.0",
+  "description": "Package that helps syncing translations with crowdin",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "bin": {
+    "mollie-crowdin": "bin/mollie-i18n"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "src"
+  ],
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "eslint",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && yarn tsc:check"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf ./lib",
+    "build": "yarn run clean && tsc -p tsconfig.build.json",
+    "build:check": "tsc -p tsconfig.build.json --noEmit",
+    "test": "NODE_ENV=test jest",
+    "tsc:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@formatjs/cli": "^1.1.12",
+    "axios": "^0.19.0",
+    "chalk": "^3.0.0",
+    "commander": "^4.0.1",
+    "dotenv": "^8.2.0",
+    "form-data": "^3.0.0",
+    "glob": "^7.1.6",
+    "mkdirp": "^0.5.1",
+    "sanitize-html": "^1.20.1",
+    "shelljs": "^0.8.3"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {
+    "@mollie/eslint-config-typescript": "^1.4.0",
+    "@types/glob": "^7.1.1",
+    "@types/jest": "^24.0.24",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^12.12.17",
+    "@types/react": "^16.9.17",
+    "@types/sanitize-html": "^1.20.2",
+    "@types/shelljs": "^0.8.6",
+    "eslint": "^6.8.0",
+    "husky": "^3.1.0",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1",
+    "react": "^16.12.0",
+    "react-intl": "^3.9.2",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.3"
+  },
+  "contributors": [
+    "Angelo Abdoelsamath <angelo.abdoelsamath@mollie.com>"
+  ]
+}

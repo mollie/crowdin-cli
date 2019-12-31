@@ -1,0 +1,19 @@
+
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "noUnusedLocals": false,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "strict": true,
+    "types": ["node", "jest"]
+  },
+  "exclude": ["lib", "node_modules", "**/*.test.ts"],
+  "include": ["src/**/*.ts"]
+}

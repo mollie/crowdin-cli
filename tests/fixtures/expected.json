@@ -1,0 +1,9 @@
+{
+  "mollie-crowdin-content": {
+    "message": "This is a test"
+  },
+  "mollie-crowdin-title": {
+    "message": "Hi!",
+    "description": "Title"
+  }
+}

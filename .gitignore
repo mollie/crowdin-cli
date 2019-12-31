@@ -1,0 +1,7 @@
+node_modules/**/*
+lib/
+*.log
+.DS_Store
+tests/intl/**/*
+tests/messages/**/*
+tests/src/**/*

@@ -22,7 +22,8 @@ export default async (glob: string) => {
     `${config.BIN}/formatjs`,
     "extract",
     files.join(" "),
-    `--messages-dir=${config.MESSAGES_DIR}`
+    `--messages-dir=${config.MESSAGES_DIR}`,
+    "--extract-from-format-message-call"
   ];
 
   const { stderr } = shell.exec(cmd.join(" "));

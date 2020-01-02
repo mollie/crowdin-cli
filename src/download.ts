@@ -6,6 +6,7 @@ import config from "./config";
 
 import { updateFile, exportFile } from "./utils/client";
 import log from "./utils/logging";
+import convertToKeyValue from "./utils/convertToKeyValue";
 
 export default async () => {
   /* sync source file to prevent branching issues */
@@ -50,10 +51,11 @@ export default async () => {
         return;
       }
 
+      const keyValueObject = convertToKeyValue(translations);
+      const keyValueJson = JSON.stringify(keyValueObject, null, 4);
+
       const destination = `${config.TRANSLATIONS_DIR}/${language}.js`;
-      const jsData = `// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.\nexport default ${JSON.stringify(
-        translations
-      )};`;
+      const jsData = `// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.\nexport default ${keyValueJson};`;
       return new Promise(resolve =>
         fs.writeFile(destination, jsData, () => resolve(true))
       );

@@ -1,13 +1,13 @@
+import { ExportFileResponse } from "./../types";
 import sanitize from "sanitize-html";
 
-export default (data: string) => {
-  const convertedData: { [key: string]: any } = JSON.parse(data);
+export default (data: ExportFileResponse) => {
   const collection: { [key: string]: any } = {};
 
-  Object.keys(convertedData)
+  Object.keys(data)
     .sort()
     .forEach(key => {
-      collection[key] = sanitize(convertedData[key].message, {
+      collection[key] = sanitize(data[key].message, {
         allowedTags: [
           "b",
           "i",

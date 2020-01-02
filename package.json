@@ -28,6 +28,7 @@
     "clean": "rm -rf ./lib",
     "build": "yarn run clean && tsc -p tsconfig.build.json",
     "build:check": "tsc -p tsconfig.build.json --noEmit",
+    "postinstall": "yarn run build",
     "test": "NODE_ENV=test jest",
     "tsc:check": "tsc --noEmit"
   },

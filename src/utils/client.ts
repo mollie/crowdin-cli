@@ -4,7 +4,7 @@ import fs from "fs";
 
 import config from "../config";
 
-import { ApiResponse, Language } from "../types";
+import { ApiResponse, Language, ExportFileResponse } from "../types";
 
 const { CROWDIN_KEY, CROWDIN_PROJECT_NAME } = config;
 
@@ -63,7 +63,7 @@ export const updateFile = async (
 export const exportFile = async (
   branch: string,
   language: Language
-): Promise<AxiosResponse<ApiResponse>> =>
+): Promise<AxiosResponse<ExportFileResponse>> =>
   axios
     .get(`${BASE_URL}/export-file`, {
       params: {

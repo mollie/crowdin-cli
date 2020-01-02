@@ -76,6 +76,12 @@ export interface ApiResponse {
   };
 }
 
+export interface ExportFileResponse {
+  [id: string]: {
+    message: string;
+  };
+}
+
 export interface Descriptor {
   id: string;
   defaultMessage: string;

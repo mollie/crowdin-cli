@@ -1,10 +1,9 @@
-import { BASE_URL } from './../src/utils/client';
 import axios from 'axios'
 import FormData from 'form-data';
-
 import fs from 'fs';
-import program from '../src/cli';
-import config from '../src/config';
+
+import { BASE_URL } from './../src/utils/client';
+
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import expected from './fixtures/expected.json';
@@ -39,7 +38,6 @@ const axiosGet = jest.fn((url) => {
 // @ts-ignore
 axios.get = axiosGet;
 
-
 const axiosPost = jest.fn(() => Promise.resolve({
   /**
    * upload file response
@@ -53,42 +51,9 @@ const axiosPost = jest.fn(() => Promise.resolve({
 // @ts-ignore
 axios.post = axiosPost;
 
-['CROWDIN_LANGUAGES', 'CROWDIN_KEY', 'CROWDIN_PROJECT_NAME'].forEach(key => {
-  describe(`cli config`, () => {
-    let newProgram: (argv: string[]) => Promise<void>;
-    let mockExit: jest.Mock;
-
-    expect.assertions(1);
-
-    beforeEach(() => {
-      jest.resetModules();
-      delete process.env[key];
-      mockExit = jest.fn();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      process.exit = mockExit;
-      /* have to use a new instance of the program, because process.env is already passed through
-       * to the program instance on top of this file.
-       * So we cannot delete an env variable and test the flow
-       **/
-      newProgram = require('../src/cli').default;
-    });
-
-    afterEach(() => {
-      require('./setup');
-    })
-
-    it(`should crash when process.env.${key} is not set`, async () => {
-      await newProgram(['node', 'test', 'collect', './tests/fixtures/**.tsx']);
-      expect(mockExit).toHaveBeenCalledWith(1);
-    });
-  });
-});
-
 describe('mollie-crowdin cli', () => {
-  afterEach(() => {
-    jest.resetModules();
-  })
+  const config = require('../src/config').default;
+  const program = require('../src/cli').default;
 
   it('collects all the messages from a component and creates a english.source.json', async () => {
     expect.assertions(1);

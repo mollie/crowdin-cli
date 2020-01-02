@@ -7,6 +7,9 @@ Add following variables to your `.env` file:
 ```shell
 CROWDIN_KEY
 CROWDIN_PROJECT_NAME
+CROWDIN_LANGUAGES
+# i.e.
+# CROWDIN_LANGUAGES=nl,en-US,fr,fr-BE
 ```
 
 Add the following scripts to `package.json`:

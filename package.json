@@ -29,6 +29,7 @@
     "build": "yarn run clean && tsc -p tsconfig.build.json",
     "build:check": "tsc -p tsconfig.build.json --noEmit",
     "test": "NODE_ENV=test jest",
+    "lint:js": "eslint \"./src/**/*.+(ts|tsx)\"",
     "tsc:check": "tsc --noEmit"
   },
   "dependencies": {

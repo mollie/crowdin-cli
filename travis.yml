@@ -7,5 +7,6 @@ cache: yarn
 
 script:
   - yarn test --runInBand
-  - yarn tsc:check
   - yarn lint:js
+  - yarn build:check
+  - yarn build

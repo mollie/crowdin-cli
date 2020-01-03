@@ -40,7 +40,8 @@ export default async () => {
 
   if (uploadRes.error) {
     log.error(
-      error?.message || "Something went wrong when uploading source.json"
+      uploadRes.error.message ||
+        "Something went wrong when uploading source.json"
     );
     process.exit(1);
   }

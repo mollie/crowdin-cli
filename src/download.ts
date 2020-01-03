@@ -6,9 +6,7 @@ import config from "./config";
 
 import { updateFile, exportFile } from "./utils/client";
 import log from "./utils/logging";
-import LocaleLanguageMap from "./utils/localeLanguageMap";
-
-import { Locales } from "./types";
+import convertToKeyValue from "./utils/convertToKeyValue";
 
 export default async () => {
   /* sync source file to prevent branching issues */
@@ -39,24 +37,25 @@ export default async () => {
   log.info("", "Downloading translations...");
 
   const exportFileResponses = await Promise.all(
-    Object.keys(LocaleLanguageMap).map(locale =>
-      exportFile(config.BRANCH, LocaleLanguageMap[locale as Locales])
+    config.CROWDIN_LANGUAGES.map(language =>
+      exportFile(config.BRANCH, language)
     )
   );
 
   log.info("", `Writing translations to: ${config.TRANSLATIONS_DIR}`);
 
   await Promise.all(
-    Object.keys(LocaleLanguageMap).map((locale, i) => {
+    config.CROWDIN_LANGUAGES.map((language, i) => {
       const translations = exportFileResponses[i].data;
       if (translations.error) {
         return;
       }
 
-      const destination = `${config.TRANSLATIONS_DIR}/${locale}.js`;
-      const jsData = `// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.\nexport default ${JSON.stringify(
-        translations
-      )};`;
+      const keyValueObject = convertToKeyValue(translations);
+      const keyValueJson = JSON.stringify(keyValueObject, null, 4);
+
+      const destination = `${config.TRANSLATIONS_DIR}/${language}.js`;
+      const jsData = `// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.\nexport default ${keyValueJson};`;
       return new Promise(resolve =>
         fs.writeFile(destination, jsData, () => resolve(true))
       );

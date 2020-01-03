@@ -3,10 +3,17 @@ import shell from "shelljs";
 
 import log from "./utils/logging";
 
-import { Config } from "./types";
+import { Config, Language } from "./types";
+import LANGUAGES from "./utils/languages";
 
-if (!process.env.CROWDIN_KEY || !process.env.CROWDIN_PROJECT_NAME) {
-  log.error("Please set your Crowdin key and project name in your .env file.");
+require("dotenv").config();
+
+if (
+  !process.env.CROWDIN_KEY ||
+  !process.env.CROWDIN_PROJECT_NAME ||
+  !process.env.CROWDIN_LANGUAGES
+) {
+  log.error("Please set all required CROWDIN variables in your .env file.");
   process.exit(1);
 }
 
@@ -24,11 +31,25 @@ const WORKING_DIR =
 const INTL_DIR = `${WORKING_DIR}/intl`;
 const MESSAGES_DIR = `${WORKING_DIR}/messages`;
 
+const projectLanguages: Language[] = process.env.CROWDIN_LANGUAGES.split(
+  ","
+) as Language[];
+
+projectLanguages.forEach(lang => {
+  if (!LANGUAGES.includes(lang)) {
+    log.error(
+      `${lang} is not supported. Please refer to https://support.crowdin.com/api/language-codes/`
+    );
+    process.exit(1);
+  }
+});
+
 const config: Config = {
   BIN: `${PROJECT_DIR}/node_modules/.bin`,
   BRANCH: branch,
   CROWDIN_KEY: process.env.CROWDIN_KEY || "",
   CROWDIN_PROJECT_NAME: process.env.CROWDIN_PROJECT_NAME || "",
+  CROWDIN_LANGUAGES: projectLanguages,
   INTL_DIR,
   MESSAGES_DIR,
   MESSAGES_PATTERN: `${MESSAGES_DIR}/**/*.json`,

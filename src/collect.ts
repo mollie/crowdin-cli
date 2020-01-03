@@ -22,7 +22,8 @@ export default async (glob: string) => {
     `${config.BIN}/formatjs`,
     "extract",
     files.join(" "),
-    `--messages-dir=${config.MESSAGES_DIR}`
+    `--messages-dir=${config.MESSAGES_DIR}`,
+    "--extract-from-format-message-call"
   ];
 
   const { stderr } = shell.exec(cmd.join(" "));
@@ -41,6 +42,11 @@ export default async (glob: string) => {
           ({ id, defaultMessage, description }: Descriptor) => {
             if (collection[id] && collection[id].message !== defaultMessage) {
               log.error(`Duplicate message id: ${id}`);
+              process.exit(1);
+            }
+
+            if (!defaultMessage) {
+              log.error(`No default message supplied for: ${id}`);
               process.exit(1);
             }
 

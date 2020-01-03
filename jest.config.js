@@ -5,7 +5,7 @@ module.exports = {
   transform: {
     '^.+\.ts?$': 'ts-jest'
   },
-  setupFiles: ['./tests/setup.js'],
+  setupFiles: ['./tests/setup.ts'],
   verbose: true,
   globals: {
     "ts-jest": {

@@ -5,3 +5,5 @@ lib/
 tests/intl/**/*
 tests/messages/**/*
 tests/src/**/*
+.idea/
+.vscode/

@@ -30,7 +30,8 @@
     "build:check": "tsc -p tsconfig.build.json --noEmit",
     "test": "NODE_ENV=test jest",
     "lint:js": "eslint \"./src/**/*.+(ts|tsx)\"",
-    "tsc:check": "tsc --noEmit"
+    "tsc:check": "tsc --noEmit",
+    "prepare": "yarn build"
   },
   "dependencies": {
     "@formatjs/cli": "^1.1.12",

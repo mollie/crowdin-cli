@@ -20,7 +20,7 @@ Add the following scripts to `package.json`:
 ```
 
 ## Typescript
-It is possible to write the downloaded files to Typescript (.ts). to Achieve that, pass the `--typescript` flag to the download command.
+It is possible to write the downloaded files to Typescript (.ts). To achieve that, pass the `--typescript` flag to the download command.
 ```shell
 "crowdin:download": "mollie-crowdin download --typescript",
 ```

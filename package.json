@@ -67,9 +67,18 @@
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.3"
   },
+  "author": {
+    "name": "Angelo Abdoelsamath",
+    "email": "angelo.abdoelsamath@mollie.com"
+  },
   "contributors": [
-    "Angelo Abdoelsamath <angelo.abdoelsamath@mollie.com>",
-    "Damiano Trimboli <damiano.trimboli@mollie.com>",
-    "Vernon de Goede <vernon@mollie.com>"
+    {
+      "name": "Damiano Trimboli",
+      "email": "damiano.trimboli@mollie.com>"
+    },
+    {
+      "name": "Vernon de Goede",
+      "email": "vernon@mollie.com"
+    }
   ]
 }

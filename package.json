@@ -1,7 +1,7 @@
 {
   "name": "@mollie/crowdin-cli",
-  "version": "1.0.0",
-  "description": "Package that helps syncing translations with crowdin",
+  "version": "1.0.1",
+  "description": "Package that helps syncing translations with Crowdin",
   "main": "lib/index.js",
   "license": "MIT",
   "bin": {
@@ -68,6 +68,8 @@
     "typescript": "^3.7.3"
   },
   "contributors": [
-    "Angelo Abdoelsamath <angelo.abdoelsamath@mollie.com>"
+    "Angelo Abdoelsamath <angelo.abdoelsamath@mollie.com>",
+    "Damiano Trimboli <damiano.trimboli@mollie.com>",
+    "Vernon de Goede <vernon@mollie.com>"
   ]
 }

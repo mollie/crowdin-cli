@@ -18,3 +18,9 @@ Add the following scripts to `package.json`:
 "crowdin:download": "mollie-crowdin download",
 "crowdin:upload": "mollie-crowdin upload '<glob directory pattern>'", // i.e. mollie-crowdin upload './src/**/!(*.test).{ts,tsx}'
 ```
+
+## Typescript
+It is possible to write the downloaded files to Typescript (.ts). To achieve that, pass the `--typescript` flag to the download command.
+```shell
+"crowdin:download": "mollie-crowdin download --typescript",
+```

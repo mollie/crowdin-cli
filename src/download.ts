@@ -8,7 +8,7 @@ import { updateFile, exportFile } from "./utils/client";
 import log from "./utils/logging";
 import convertToKeyValue from "./utils/convertToKeyValue";
 
-export default async () => {
+export default async (isTS = false) => {
   /* sync source file to prevent branching issues */
 
   if (!fs.existsSync(config.TRANSLATIONS_FILE)) {
@@ -21,6 +21,7 @@ export default async () => {
   mkdirpSync(config.TRANSLATIONS_DIR);
 
   const file = fs.createReadStream(config.TRANSLATIONS_FILE);
+  const fileExtension = isTS ? "ts" : "js";
 
   const updateResponse = await updateFile(config.BRANCH, file);
 
@@ -54,7 +55,7 @@ export default async () => {
       const keyValueObject = convertToKeyValue(translations);
       const keyValueJson = JSON.stringify(keyValueObject, null, 4);
 
-      const destination = `${config.TRANSLATIONS_DIR}/${language}.js`;
+      const destination = `${config.TRANSLATIONS_DIR}/${language}.${fileExtension}`;
       const jsData = `// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.\nexport default ${keyValueJson};`;
       return new Promise(resolve =>
         fs.writeFile(destination, jsData, () => resolve(true))
@@ -70,7 +71,7 @@ export default async () => {
     [
       prettier,
       "--loglevel silent",
-      `--write "${config.TRANSLATIONS_DIR}/*.+(js)"`
+      `--write "${config.TRANSLATIONS_DIR}/*.+(${fileExtension})"`
     ].join(" ")
   );
 

@@ -42,9 +42,10 @@ async function main(argv: string[]): Promise<void> {
 
     program
       .command("download")
-      .description("download new translations from crowdin")
-      .action(async () => {
-        await download();
+      .description("download new translations from Crowdin")
+      .option("--typescript", "write to TypeScript files (.ts)")
+      .action(async (p: typeof program) => {
+        await download((p.typescript as boolean | undefined) === true);
         resolve();
       });
 

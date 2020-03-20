@@ -74,7 +74,7 @@
   "contributors": [
     {
       "name": "Damiano Trimboli",
-      "email": "damiano.trimboli@mollie.com>"
+      "email": "damiano.trimboli@mollie.com"
     },
     {
       "name": "Vernon de Goede",
@@ -82,6 +82,7 @@
     }
   ],
   "resolutions": {
-    "minimist": "^1.2.2"
+    "minimist": "^1.2.2",
+    "acorn": "^7.1.1"
   }
 }

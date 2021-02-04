@@ -318,7 +318,7 @@ const LANGUAGES: Language[] = [
   "yi",
   "yo",
   "zea",
-  "zu"
+  "zu",
 ];
 
 export default LANGUAGES;

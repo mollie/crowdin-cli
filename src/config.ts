@@ -1,41 +1,32 @@
 import fs from "fs";
 import shell from "shelljs";
-
 import log from "./utils/logging";
-
 import { Config, Language } from "./types";
 import LANGUAGES from "./utils/languages";
+import dotenv from "dotenv";
 
-require("dotenv").config();
+dotenv.config();
 
-if (
-  !process.env.CROWDIN_KEY ||
-  !process.env.CROWDIN_PROJECT_NAME ||
-  !process.env.CROWDIN_LANGUAGES
-) {
+if (!process.env.CROWDIN_LANGUAGES) {
   log.error("Please set all required CROWDIN variables in your .env file.");
   process.exit(1);
 }
 
 const { stdout } = shell.exec("git rev-parse --abbrev-ref HEAD | tr / -", {
-  silent: true
+  silent: true,
 });
 const branch =
   process.env.NODE_ENV !== "test" ? stdout.replace("\n", "") : "test-branch";
-
 const PROJECT_DIR = process.cwd();
-
 const WORKING_DIR =
   process.env.NODE_ENV !== "test" ? process.cwd() : `${process.cwd()}/tests`;
-
 const INTL_DIR = `${WORKING_DIR}/intl`;
 const MESSAGES_DIR = `${WORKING_DIR}/messages`;
-
 const projectLanguages: Language[] = process.env.CROWDIN_LANGUAGES.split(
   ","
 ) as Language[];
 
-projectLanguages.forEach(lang => {
+projectLanguages.forEach((lang) => {
   if (!LANGUAGES.includes(lang)) {
     log.error(
       `${lang} is not supported. Please refer to https://support.crowdin.com/api/language-codes/`
@@ -46,16 +37,18 @@ projectLanguages.forEach(lang => {
 
 const config: Config = {
   BIN: `${PROJECT_DIR}/node_modules/.bin`,
-  BRANCH: branch,
-  CROWDIN_KEY: process.env.CROWDIN_KEY || "",
-  CROWDIN_PROJECT_NAME: process.env.CROWDIN_PROJECT_NAME || "",
+  BRANCH_NAME: branch,
+  FILE_NAME: "source.json",
+  CROWDIN_PERSONAL_ACCESS_TOKEN:
+    process.env.CROWDIN_PERSONAL_ACCESS_TOKEN || "",
+  CROWDIN_PROJECT_ID: Number(process.env.CROWDIN_PROJECT_ID),
   CROWDIN_LANGUAGES: projectLanguages,
   INTL_DIR,
   MESSAGES_DIR,
   MESSAGES_PATTERN: `${MESSAGES_DIR}/**/*.json`,
   NODE_EXEC: process.execPath,
   TRANSLATIONS_DIR: `${WORKING_DIR}/src/intl`,
-  TRANSLATIONS_FILE: `${INTL_DIR}/english.source.json`
+  TRANSLATIONS_FILE: `${INTL_DIR}/english.source.json`,
 };
 
 if (!fs.existsSync(`${config.BIN}/formatjs`)) {

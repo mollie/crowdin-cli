@@ -1,15 +1,15 @@
 module.exports = {
-  preset: 'ts-jest',
-  roots: ['<rootDir>'],
-  testEnvironment: 'node',
+  preset: "ts-jest",
+  roots: ["<rootDir>"],
+  testEnvironment: "node",
   transform: {
-    '^.+\.ts?$': 'ts-jest'
+    "^.+.ts?$": "ts-jest",
   },
-  setupFiles: ['./tests/setup.ts'],
+  setupFiles: ["./tests/setup.ts"],
   verbose: true,
   globals: {
     "ts-jest": {
-      tsConfig: './tsconfig.test.json',
-    }
-  }
+      tsconfig: "./tsconfig.test.json",
+    },
+  },
 };

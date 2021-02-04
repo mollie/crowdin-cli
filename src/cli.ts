@@ -2,55 +2,50 @@ import commander from "commander";
 import upload from "./upload";
 import download from "./download";
 import collect from "./collect";
+import deleteBranch from "./delete-branch";
 
-const COMMANDS = ["upload", "download"];
-
-async function main(argv: string[]): Promise<void> {
+async function main(argv: string[]) {
   const program = new commander.Command();
-
   const version = require("../package.json").version;
 
-  return new Promise(resolve => {
-    program
-      .version(version, "-v, --version")
-      .usage("<command> [flags]")
-      .action(command => {
-        if (!COMMANDS.includes(command)) {
-          program.help();
-          resolve();
-        }
-      });
+  program
+    .name("mollie-crowdin")
+    .usage("<upload | collect | download | delete-branch> [options]")
+    .version(version);
 
-    program
-      .command("upload <glob>")
-      .description("scan the directory for new messages and upload them")
-      .action(async (glob: string) => {
-        await collect(glob);
-        await upload();
-        resolve();
-      });
+  program
+    .command("upload <glob>")
+    .description("scan the directory for new messages and upload them")
+    .action(async (glob: string) => {
+      await collect(glob);
+      await upload();
+    });
 
-    program
-      .command("collect <glob>")
-      .description(
-        "scan the directory for new messages and save them to english.source.json"
-      )
-      .action(async (glob: string) => {
-        await collect(glob);
-        resolve();
-      });
+  program
+    .command("collect <glob>")
+    .description(
+      "scan the directory for new messages and save them to english.source.json"
+    )
+    .action(async (glob: string) => {
+      await collect(glob);
+    });
 
-    program
-      .command("download")
-      .description("download new translations from Crowdin")
-      .option("--typescript", "write to TypeScript files (.ts)")
-      .action(async (p: typeof program) => {
-        await download((p.typescript as boolean | undefined) === true);
-        resolve();
-      });
+  program
+    .command("download")
+    .description("download new translations from Crowdin")
+    .option("--typescript", "write to TypeScript files (.ts)")
+    .action(async (options: { typescript?: boolean }) => {
+      await download(options?.typescript === true);
+    });
 
-    program.parse(argv);
-  });
+  program
+    .command("delete-branch")
+    .description("clean up branches in Crowdin")
+    .action(async () => {
+      await deleteBranch();
+    });
+
+  program.parse(argv);
 }
 
 export default main;

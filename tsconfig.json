@@ -1,8 +1,7 @@
-
 {
   "compilerOptions": {
     "target": "es2017",
-    "outDir": "./lib",
+    "outDir": "./dist",
     "rootDir": "./src",
     "module": "esnext",
     "moduleResolution": "node",
@@ -14,6 +13,6 @@
     "strict": true,
     "types": ["node", "jest"]
   },
-  "exclude": ["lib", "node_modules", "**/*.test.ts"],
+  "exclude": ["dist", "node_modules", "**/*.test.ts"],
   "include": ["src/**/*.ts"]
 }

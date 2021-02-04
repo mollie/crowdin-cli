@@ -1,6 +1,6 @@
 {
   "name": "@mollie/crowdin-cli",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Package that helps syncing translations with Crowdin",
   "main": "lib/index.js",
   "license": "MIT",
@@ -79,6 +79,10 @@
     {
       "name": "Vernon de Goede",
       "email": "vernon@mollie.com"
+    },
+    {
+      "name": "Philipp Rappold",
+      "email": "philipp.rappold@mollie.com"
     }
   ],
   "resolutions": {

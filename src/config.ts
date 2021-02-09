@@ -6,7 +6,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-if (!process.env.CROWDIN_LANGUAGES) {
+if (
+  !process.env.CROWDIN_PERSONAL_ACCESS_TOKEN ||
+  !process.env.CROWDIN_PROJECT_ID ||
+  !process.env.CROWDIN_LANGUAGES
+) {
   log.error("Please set all required CROWDIN variables in your .env file.");
   process.exit(1);
 }

@@ -25,35 +25,35 @@ const {
   uploadStorageApi,
 } = new CrowdinApiClient(credentials);
 
-export function unwrapValidationErrorResponse(
+export const unwrapValidationErrorResponse = (
   response: ValidationErrorResponse
-): Error {
+): Error => {
   return response.errors[0].error.errors[0];
-}
+};
 
-export function isCommonErrorResponse(
+export const isCommonErrorResponse = (
   response: CrowdinResponse<any>
-): response is CommonErrorResponse {
+): response is CommonErrorResponse => {
   return (response as CommonErrorResponse).error !== undefined;
-}
+};
 
-function listBranches(
+const listBranches = (
   branchName: string
-): Promise<ResponseList<SourceFilesModel.Branch>> {
+): Promise<ResponseList<SourceFilesModel.Branch>> => {
   return sourceFilesApi.listProjectBranches(CROWDIN_PROJECT_ID, branchName);
-}
+};
 
-function listFiles(
+const listFiles = (
   branchId: number
-): Promise<ResponseList<SourceFilesModel.File>> {
+): Promise<ResponseList<SourceFilesModel.File>> => {
   return sourceFilesApi.listProjectFiles(CROWDIN_PROJECT_ID, branchId);
-}
+};
 
-function addStorage(
+const addStorage = (
   file: fs.ReadStream
-): Promise<ResponseObject<UploadStorageModel.Storage>> {
+): Promise<ResponseObject<UploadStorageModel.Storage>> => {
   return uploadStorageApi.addStorage(FILE_NAME, file);
-}
+};
 
 export const createBranch = (
   name: string
@@ -107,7 +107,7 @@ export const exportFile = async (
   const branches = await listBranches(branchName);
   const branchId = branches.data[0].data.id;
   const files = await listFiles(branchId);
-  const fileIds = files.data.map(file => file.data.id);
+  const fileIds = files.data.map((file) => file.data.id);
   const translation = await translationsApi.exportProjectTranslation(
     CROWDIN_PROJECT_ID,
     {

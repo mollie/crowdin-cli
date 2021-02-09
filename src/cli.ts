@@ -4,7 +4,7 @@ import download from "./download";
 import collect from "./collect";
 import deleteBranch from "./delete-branch";
 
-async function main(argv: string[]) {
+const main = async (argv: string[]) => {
   const program = new commander.Command();
   const version = require("../package.json").version;
 
@@ -46,6 +46,6 @@ async function main(argv: string[]) {
     });
 
   program.parse(argv);
-}
+};
 
 export default main;

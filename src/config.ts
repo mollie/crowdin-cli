@@ -1,8 +1,7 @@
 import fs from "fs";
 import shell from "shelljs";
 import log from "./utils/logging";
-import { Config, Language } from "./types";
-import LANGUAGES from "./utils/languages";
+import { Config } from "./types";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -22,18 +21,9 @@ const WORKING_DIR =
   process.env.NODE_ENV !== "test" ? process.cwd() : `${process.cwd()}/tests`;
 const INTL_DIR = `${WORKING_DIR}/intl`;
 const MESSAGES_DIR = `${WORKING_DIR}/messages`;
-const projectLanguages: Language[] = process.env.CROWDIN_LANGUAGES.split(
+const projectLanguages: string[] = process.env.CROWDIN_LANGUAGES.split(
   ","
-) as Language[];
-
-projectLanguages.forEach((lang) => {
-  if (!LANGUAGES.includes(lang)) {
-    log.error(
-      `${lang} is not supported. Please refer to https://support.crowdin.com/api/language-codes/`
-    );
-    process.exit(1);
-  }
-});
+) as string[];
 
 const config: Config = {
   BIN: `${PROJECT_DIR}/node_modules/.bin`,

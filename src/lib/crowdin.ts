@@ -11,7 +11,7 @@ import CrowdinApiClient, {
 } from "@crowdin/crowdin-api-client";
 import fs from "fs";
 import config from "../config";
-import { CrowdinResponse, Language, ExportFileResponse } from "../types";
+import { CrowdinResponse, ExportFileResponse } from "../types";
 
 const { CROWDIN_PERSONAL_ACCESS_TOKEN, CROWDIN_PROJECT_ID, FILE_NAME } = config;
 
@@ -102,7 +102,7 @@ export const updateOrRestoreFile = async (
 
 export const exportFile = async (
   branchName: string,
-  language: Language
+  language: string
 ): Promise<AxiosResponse<ExportFileResponse>> => {
   const branches = await listBranches(branchName);
   const branchId = branches.data[0].data.id;

@@ -13,10 +13,6 @@
     "src"
   ],
   "prettier": {
-    "bracketSpacing": true,
-    "jsxBracketSameLine": false,
-    "semi": true,
-    "printWidth": 80,
     "trailingComma": "es5"
   },
   "lint-staged": {

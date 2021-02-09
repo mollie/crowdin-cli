@@ -6,7 +6,7 @@ export default (data: ExportFileResponse) => {
 
   Object.keys(data)
     .sort()
-    .forEach((key) => {
+    .forEach(key => {
       collection[key] = sanitize(data[key].message, {
         allowedTags: [
           "b",
@@ -28,7 +28,7 @@ export default (data: ExportFileResponse) => {
           a: ["href", "rel", "target"],
         },
         allowedSchemes: sanitize.defaults.allowedSchemes.concat(["tel"]),
-        textFilter: (text) => text.replace("&amp;", "&"),
+        textFilter: text => text.replace("&amp;", "&"),
       });
     });
 

@@ -37,7 +37,7 @@ export default async (isTS = false) => {
   log.info("Downloading translations from Crowdin");
 
   const exportFileResponses = await Promise.all(
-    config.CROWDIN_LANGUAGES.map((language) => {
+    config.CROWDIN_LANGUAGES.map(language => {
       return exportFile(config.BRANCH_NAME, language);
     })
   );
@@ -57,7 +57,7 @@ export default async (isTS = false) => {
       const destination = `${config.TRANSLATIONS_DIR}/${language}.${fileExtension}`;
       const jsData = `// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.\nexport default ${keyValueJson};`;
 
-      return new Promise((resolve) =>
+      return new Promise(resolve =>
         fs.writeFile(destination, jsData, () => resolve(true))
       );
     })

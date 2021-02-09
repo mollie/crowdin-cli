@@ -107,7 +107,7 @@ export const exportFile = async (
   const branches = await listBranches(branchName);
   const branchId = branches.data[0].data.id;
   const files = await listFiles(branchId);
-  const fileIds = files.data.map((file) => file.data.id);
+  const fileIds = files.data.map(file => file.data.id);
   const translation = await translationsApi.exportProjectTranslation(
     CROWDIN_PROJECT_ID,
     {

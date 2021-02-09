@@ -29,8 +29,8 @@ export default async (glob: string) => {
   }
 
   const messages: Messages = globSync(config.MESSAGES_PATTERN)
-    .map((filename) => fs.readFileSync(filename, "utf8"))
-    .map((file) => JSON.parse(file))
+    .map(filename => fs.readFileSync(filename, "utf8"))
+    .map(file => JSON.parse(file))
     .reduce((collection, descriptors) => {
       try {
         descriptors.forEach(

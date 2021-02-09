@@ -1,9 +1,22 @@
-node_modules/**/*
-dist/
+# misc
 *.log
 .DS_Store
-tests/intl/**/*
-tests/messages/**/*
-tests/src/**/*
+
+# dependencies
+node_modules
+
+# production
+dist
+
+# env files
+.env
+.env.*
+
+# tests
+tests/intl/
+tests/messages/
+tests/src/
+
+# editors
 .idea/
 .vscode/

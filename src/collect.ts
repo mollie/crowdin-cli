@@ -8,6 +8,9 @@ import log from "./utils/logging";
 import { Messages, Descriptor } from "./types";
 
 export default async (glob: string) => {
+  log.info("Removing `/messages` folder");
+  fs.rmdirSync(config.MESSAGES_DIR, { recursive: true });
+
   log.info("Collecting translations");
   mkdirpSync(config.INTL_DIR);
   const files = globSync(glob);

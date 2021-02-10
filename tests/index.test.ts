@@ -44,6 +44,7 @@ jest.mock(
   "axios",
   jest.fn().mockReturnValue({
     get: jest.fn().mockResolvedValue({
+      status: 200,
       data: {
         "mollie-crowdin-content": { message: "Dit is een test" },
         "mollie-crowdin-title": { message: "Hi" },
@@ -125,10 +126,9 @@ describe("CLI", () => {
 
 describe("Handlers", () => {
   beforeEach(() => {
-    // Remove directories created in tests
-    fs.rmdirSync("tests/intl", { recursive: true });
-    fs.rmdirSync("tests/messages", { recursive: true });
-    fs.rmdirSync("tests/src", { recursive: true });
+    // Clean up auto-generated directories
+    fs.rmdirSync(config.INTL_DIR, { recursive: true });
+    fs.rmdirSync(config.TRANSLATIONS_DIR, { recursive: true });
   });
 
   afterEach(() => {

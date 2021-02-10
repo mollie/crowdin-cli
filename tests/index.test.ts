@@ -89,9 +89,9 @@ jest.mock("../src/delete-branch", () => {
   };
 });
 
-describe("CLI", () => {
-  const mockGlob = "./tests/fixtures/**.tsx";
+const mockGlob = "tests/fixtures/**/*.ts*";
 
+describe("CLI", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -139,7 +139,7 @@ describe("Handlers", () => {
     expect.assertions(2);
 
     // Collects all messages from a component and creates english.source.json
-    await collect("./tests/fixtures/**.tsx");
+    await collect(mockGlob);
     expect(
       fs.existsSync(`${config.INTL_DIR}/english.source.json`)
     ).toBeTruthy();
@@ -184,7 +184,7 @@ describe("Handlers", () => {
 
   it("downloads messages of the specified branch from Crowdin", async () => {
     expect.assertions(1);
-    await collect("./tests/fixtures/**.tsx");
+    await collect(mockGlob);
     await download();
     const file = fs.readFileSync(`${config.TRANSLATIONS_DIR}/nl.js`).toString();
     expect(file).toMatchSnapshot();

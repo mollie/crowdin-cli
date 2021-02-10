@@ -24,7 +24,6 @@ const PROJECT_DIR = process.cwd();
 const WORKING_DIR =
   process.env.NODE_ENV !== "test" ? process.cwd() : `${process.cwd()}/tests`;
 const INTL_DIR = `${WORKING_DIR}/intl`;
-const MESSAGES_DIR = `${WORKING_DIR}/messages`;
 const projectLanguages: string[] = process.env.CROWDIN_LANGUAGES.split(
   ","
 ) as string[];
@@ -38,15 +37,13 @@ const config: Config = {
   CROWDIN_PROJECT_ID: Number(process.env.CROWDIN_PROJECT_ID),
   CROWDIN_LANGUAGES: projectLanguages,
   INTL_DIR,
-  MESSAGES_DIR,
-  MESSAGES_PATTERN: `${MESSAGES_DIR}/**/*.json`,
   NODE_EXEC: process.execPath,
   TRANSLATIONS_DIR: `${WORKING_DIR}/src/intl`,
   TRANSLATIONS_FILE: `${INTL_DIR}/english.source.json`,
 };
 
 if (!fs.existsSync(`${config.BIN}/formatjs`)) {
-  log.error("@formatjs/cli executable not found in project directory.");
+  log.error("@formatjs/cli executable not found in project directory");
   process.exit(1);
 }
 

@@ -11,19 +11,6 @@ export interface ExportFileResponse {
   };
 }
 
-export interface Descriptor {
-  id: string;
-  defaultMessage: string;
-  description?: string;
-}
-
-export interface Messages {
-  [id: string]: {
-    message: string;
-    description?: string;
-  };
-}
-
 export interface Config {
   BIN: string;
   BRANCH_NAME: string;
@@ -32,8 +19,6 @@ export interface Config {
   CROWDIN_PROJECT_ID: number;
   CROWDIN_LANGUAGES: string[];
   INTL_DIR: string;
-  MESSAGES_DIR: string;
-  MESSAGES_PATTERN: string;
   NODE_EXEC: string;
   TRANSLATIONS_DIR: string;
   TRANSLATIONS_FILE: string;

@@ -1,4 +1,4 @@
-import { sync as mkdirpSync } from "mkdirp";
+import { sync } from "mkdirp";
 import fs from "fs";
 import shell from "shelljs";
 import chalk from "chalk";
@@ -20,7 +20,7 @@ export default async (isTS = false) => {
 
   log.info("Syncing source file");
 
-  mkdirpSync(config.TRANSLATIONS_DIR);
+  sync(config.TRANSLATIONS_DIR);
 
   const file = fs.createReadStream(config.TRANSLATIONS_FILE);
   const fileExtension = isTS ? "ts" : "js";

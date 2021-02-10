@@ -48,7 +48,7 @@ export default async (isTS = false) => {
     config.CROWDIN_LANGUAGES.map((language, i) => {
       const response = exportFileResponses[i];
 
-      if (!response || response.data.error) {
+      if (!response || response.status !== 200) {
         return;
       }
 

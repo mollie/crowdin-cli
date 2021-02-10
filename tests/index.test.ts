@@ -46,7 +46,7 @@ jest.mock(
     get: jest.fn().mockResolvedValue({
       data: {
         "mollie-crowdin-content": { message: "Dit is een test" },
-        "mollie-crowdin-title": { message: "Titel" },
+        "mollie-crowdin-title": { message: "Hi" },
       },
     }),
   })

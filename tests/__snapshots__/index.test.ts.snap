@@ -4,7 +4,7 @@ exports[`Handlers downloads messages of the specified branch from Crowdin 1`] = 
 "// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.
 export default {
   \\"mollie-crowdin-content\\": \\"Dit is een test\\",
-  \\"mollie-crowdin-title\\": \\"Titel\\",
+  \\"mollie-crowdin-title\\": \\"Hi\\",
 };
 "
 `;

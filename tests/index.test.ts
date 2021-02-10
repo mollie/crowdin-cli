@@ -102,10 +102,10 @@ describe("CLI", () => {
   });
 
   it("correctly handles `upload` command", async () => {
-    await program(["node", "test", "collect", mockGlob]);
+    await program(["node", "test", "upload", mockGlob]);
     expect(collect).toHaveBeenCalledTimes(1);
     expect(collect).toHaveBeenCalledWith(mockGlob);
-    // expect(upload).toHaveBeenCalledTimes(1);
+    expect(upload).toHaveBeenCalledTimes(1);
   });
 
   it("correctly handles `download` command", async () => {

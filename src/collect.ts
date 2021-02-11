@@ -24,6 +24,4 @@ export default async (glob: string) => {
     log.error(stderr);
     process.exit(1);
   }
-
-  return;
 };

@@ -1,5 +1,5 @@
 {
-  "version": "2.0.2",
+  "version": "2.0.3",
   "license": "MIT",
   "name": "@mollie/crowdin-cli",
   "author": {
@@ -39,7 +39,7 @@
     "build": "tsdx build -i src/cli.ts --target node",
     "test": "tsdx test",
     "lint": "tsdx lint src tests",
-    "prepare": "tsdx build",
+    "prepare": "yarn build",
     "tsc:check": "tsc --noEmit"
   },
   "dependencies": {

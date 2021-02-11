@@ -44,7 +44,7 @@ jest.mock(
   "axios",
   jest.fn().mockReturnValue({
     get: jest.fn().mockResolvedValue({
-      status: 200,
+      statusText: "OK",
       data: {
         "mollie-crowdin-content": { message: "Dit is een test" },
         "mollie-crowdin-title": { message: "Hi" },

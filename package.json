@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "MIT",
   "name": "@mollie/crowdin-cli",
   "author": {
@@ -23,6 +23,9 @@
   "main": "dist/index.js",
   "module": "dist/crowdin-test.esm.js",
   "typings": "dist/index.d.ts",
+  "bin": {
+    "mollie-crowdin": "bin/mollie-i18n"
+  },
   "files": [
     "dist",
     "src"

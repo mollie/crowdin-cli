@@ -1,5 +1,5 @@
 {
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "MIT",
   "name": "@mollie/crowdin-cli",
   "author": {
@@ -27,6 +27,7 @@
     "mollie-crowdin": "bin/mollie-i18n"
   },
   "files": [
+    "bin",
     "dist",
     "src"
   ],

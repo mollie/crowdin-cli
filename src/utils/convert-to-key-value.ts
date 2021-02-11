@@ -1,4 +1,4 @@
-import { ExportFileResponse } from "./../types";
+import { ExportFileResponse } from "../types";
 import sanitize from "sanitize-html";
 
 export default (data: ExportFileResponse) => {
@@ -22,13 +22,13 @@ export default (data: ExportFileResponse) => {
           "h2",
           "h3",
           "h4",
-          "br"
+          "br",
         ],
         allowedAttributes: {
-          a: ["href", "rel", "target"]
+          a: ["href", "rel", "target"],
         },
         allowedSchemes: sanitize.defaults.allowedSchemes.concat(["tel"]),
-        textFilter: text => text.replace("&amp;", "&")
+        textFilter: text => text.replace("&amp;", "&"),
       });
     });
 

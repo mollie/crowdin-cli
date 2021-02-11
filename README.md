@@ -1,26 +1,37 @@
+# Crowdin CLI
 
-# `@mollie/crowdin-cli`
+A little helper to sync messages with Crowdin. It uses [`@formatjs/cli`](https://formatjs.io/docs/tooling/cli/) to extract messages from your application.
 
-This CLI is used for syncing application translations with Crowdin. It uses `formatjs-cli` to extract the messages from the application.
+## Installation
+
+```shell
+npm install @mollie/crowdin-cli
+# or
+yarn add @mollie/crowdin-cli
+```
 
 ## Usage
-Add the following variables to your `.env` file:
+
+In your project, create a `.env` file and add the following environment-variables:
+
 ```shell
-CROWDIN_KEY
-CROWDIN_PROJECT_NAME
-CROWDIN_LANGUAGES
-# i.e.
-# CROWDIN_LANGUAGES=nl,en-US,fr,fr-BE
+CROWDIN_PERSONAL_ACCESS_TOKEN={your-access-token}
+CROWDIN_PROJECT_ID={your-project-id}
+CROWDIN_LANGUAGES=nl,en-US,fr,fr-BE # Comma-separated list of languages
 ```
 
-Add the following scripts to `package.json`:
-```shell
+In your `package.json`, add these scripts:
+
+```json
 "crowdin:download": "mollie-crowdin download",
-"crowdin:upload": "mollie-crowdin upload '<glob directory pattern>'", // i.e. mollie-crowdin upload './src/**/!(*.test).{ts,tsx}'
+"crowdin:upload": "mollie-crowdin upload './src/**/!(*.{d,test})*.ts*'", // Adjust glob-pattern if necessary
+"crowdin:delete-branch": "mollie-crowdin delete-branch"
 ```
 
-## Typescript
-It is possible to write the downloaded files to Typescript (.ts). To achieve that, pass the `--typescript` flag to the download command.
+## TypeScript
+
+To write the downloaded messages to TypeScript (.ts) files, pass the `--typescript` flag to the `download` command.
+
 ```shell
-"crowdin:download": "mollie-crowdin download --typescript",
+"crowdin:download": "mollie-crowdin download --typescript"
 ```

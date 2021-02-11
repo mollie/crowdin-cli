@@ -1,52 +1,53 @@
 import fs from "fs";
-
 import config from "./config";
-
-import { createDirectory, addFile, updateFile } from "./utils/client";
+import {
+  createFile,
+  updateOrRestoreFile,
+  createBranch,
+  isCommonErrorResponse,
+  unwrapValidationErrorResponse,
+} from "./lib/crowdin";
 import log from "./utils/logging";
+import chalk from "chalk";
 
 export default async () => {
-  log.info("", "Uploading source file to Crowdin...");
-
-  const response = await createDirectory(config.BRANCH);
-
-  if (!response) {
-    log.error(`Something went wrong when trying to create a directory`);
-    process.exit(1);
-  }
-
-  const {
-    data: { success, error }
-  } = response;
-
-  if (error && error.code !== 50) {
-    log.error(
-      error?.message || `Something went wrong when trying to create a directory`
-    );
-    process.exit(1);
-  }
-
-  const fileApi = error?.code === 50 ? updateFile : addFile;
+  log.info("Uploading source file to Crowdin");
 
   const file = fs.createReadStream(config.TRANSLATIONS_FILE);
 
-  if (success) {
-    log.success(`Created directory: ${config.BRANCH}`);
-  } else if (error?.code === 50) {
-    log.info("", `Directory ${config.BRANCH} already exists`);
+  try {
+    const response = await createBranch(config.BRANCH_NAME);
+
+    if (isCommonErrorResponse(response)) {
+      log.error(response.error.message);
+    } else {
+      await createFile(response.data.name, file);
+      log.success(`Created branch ${chalk.bold(response.data.name)}`);
+      log.success(
+        `Uploaded source file to branch: ${chalk.bold(response.data.name)}`
+      );
+    }
+  } catch (errorResponse) {
+    const error = unwrapValidationErrorResponse(errorResponse);
+
+    if (error.code === "notUnique") {
+      // Branch already exists. Update the file.
+      log.info(`Branch ${chalk.bold(config.BRANCH_NAME)} already exists`);
+      log.info(
+        `Updating source file in branch: ${chalk.bold(config.BRANCH_NAME)}`
+      );
+
+      try {
+        await updateOrRestoreFile(config.BRANCH_NAME, file);
+        log.success("Source file updated");
+      } catch (error) {
+        log.error(error);
+      }
+    } else {
+      // Something else went wrong. Sometimes after a branch is
+      // deleted in Crowdin, it takes a couple seconds until a new one
+      // can be created. It’s probably that.
+      log.error(error.code);
+    }
   }
-
-  const { data: uploadRes } = await fileApi(config.BRANCH, file);
-
-  if (uploadRes.error) {
-    log.error(
-      uploadRes.error.message ||
-        "Something went wrong when uploading source.json"
-    );
-    process.exit(1);
-  }
-
-  log.success(`Updated source.json is uploaded to directory: ${config.BRANCH}`);
-
-  return;
 };

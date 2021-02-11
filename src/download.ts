@@ -1,69 +1,69 @@
-import { sync as mkdirpSync } from "mkdirp";
+import { sync } from "mkdirp";
 import fs from "fs";
 import shell from "shelljs";
-
+import chalk from "chalk";
 import config from "./config";
-
-import { updateFile, exportFile } from "./utils/client";
+import {
+  updateOrRestoreFile,
+  exportFile,
+  isCommonErrorResponse,
+} from "./lib/crowdin";
 import log from "./utils/logging";
-import convertToKeyValue from "./utils/convertToKeyValue";
+import convertToKeyValue from "./utils/convert-to-key-value";
 
 export default async (isTS = false) => {
-  /* sync source file to prevent branching issues */
-
+  // Sync source file to prevent branching issues
   if (!fs.existsSync(config.TRANSLATIONS_FILE)) {
     log.error(`${config.TRANSLATIONS_FILE} does not exist.`);
     process.exit(1);
   }
 
-  log.info("CROWDIN", "Starting download process...");
+  log.info("Syncing source file");
 
-  mkdirpSync(config.TRANSLATIONS_DIR);
+  sync(config.TRANSLATIONS_DIR);
 
   const file = fs.createReadStream(config.TRANSLATIONS_FILE);
   const fileExtension = isTS ? "ts" : "js";
+  const updateResponse = await updateOrRestoreFile(config.BRANCH_NAME, file);
 
-  const updateResponse = await updateFile(config.BRANCH, file);
-
-  log.info("", "Syncing source.json");
-
-  if (!updateResponse?.data?.success) {
-    const { error } = updateResponse.data;
+  if (isCommonErrorResponse(updateResponse)) {
     log.error(
-      error?.message || "Something went wrong when uploading source.json"
+      updateResponse.error.message ||
+        `Something went wrong while uploading the source file`
     );
     process.exit(1);
   }
 
-  log.info("", "Downloading translations...");
+  log.info("Downloading translations from Crowdin");
 
   const exportFileResponses = await Promise.all(
-    config.CROWDIN_LANGUAGES.map(language =>
-      exportFile(config.BRANCH, language)
-    )
+    config.CROWDIN_LANGUAGES.map(language => {
+      return exportFile(config.BRANCH_NAME, language);
+    })
   );
 
-  log.info("", `Writing translations to: ${config.TRANSLATIONS_DIR}`);
+  log.info(`Writing translations to: ${chalk.bold(config.TRANSLATIONS_DIR)}`);
 
   await Promise.all(
     config.CROWDIN_LANGUAGES.map((language, i) => {
-      const translations = exportFileResponses[i].data;
-      if (translations.error) {
+      const response = exportFileResponses[i];
+
+      if (!response || response.statusText !== "OK") {
         return;
       }
 
-      const keyValueObject = convertToKeyValue(translations);
+      const keyValueObject = convertToKeyValue(response.data);
       const keyValueJson = JSON.stringify(keyValueObject, null, 4);
-
       const destination = `${config.TRANSLATIONS_DIR}/${language}.${fileExtension}`;
       const jsData = `// Auto generated file. Do no change. Go to Crowdin to update the translations and run './node_modules/.bin/mollie-crowdin download' to update this file.\nexport default ${keyValueJson};`;
+
       return new Promise(resolve =>
         fs.writeFile(destination, jsData, () => resolve(true))
       );
     })
   );
 
-  log.info("", "Running prettier");
+  log.info("Running Prettier on downloaded files");
 
   const prettier = `${config.BIN}/prettier`;
 
@@ -71,9 +71,9 @@ export default async (isTS = false) => {
     [
       prettier,
       "--loglevel silent",
-      `--write "${config.TRANSLATIONS_DIR}/*.+(${fileExtension})"`
+      `--write "${config.TRANSLATIONS_DIR}/*.+(${fileExtension})"`,
     ].join(" ")
   );
 
-  log.success("Updated translations 🎉");
+  log.success("Translations updated");
 };

@@ -1,19 +1,23 @@
-
 {
+  "include": ["src", "types"],
   "compilerOptions": {
-    "target": "es2017",
-    "outDir": "./lib",
-    "rootDir": "./src",
     "module": "esnext",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "noUnusedLocals": false,
-    "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
+    "lib": ["dom", "esnext"],
+    "importHelpers": true,
     "declaration": true,
+    "sourceMap": true,
+    "rootDir": "./src",
     "strict": true,
-    "types": ["node", "jest"]
-  },
-  "exclude": ["lib", "node_modules", "**/*.test.ts"],
-  "include": ["src/**/*.ts"]
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "resolveJsonModule": true
+  }
 }

@@ -8,26 +8,9 @@ export default (data: ExportFileResponse) => {
     .sort()
     .forEach(key => {
       collection[key] = sanitize(data[key].message, {
-        allowedTags: [
-          "b",
-          "i",
-          "em",
-          "strong",
-          "a",
-          "p",
-          "ul",
-          "ol",
-          "li",
-          "h1",
-          "h2",
-          "h3",
-          "h4",
-          "br",
-        ],
         allowedAttributes: {
-          a: ["href", "rel", "target"],
+          a: ["href", "name", "rel", "target"],
         },
-        allowedSchemes: sanitize.defaults.allowedSchemes.concat(["tel"]),
         textFilter: text => text.replace("&amp;", "&"),
       });
     });

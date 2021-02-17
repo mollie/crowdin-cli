@@ -40,7 +40,12 @@ export default async (isTS = false) => {
     config.CROWDIN_LANGUAGES.map(language => {
       return exportFile(config.BRANCH_NAME, language);
     })
-  );
+  ).catch(data => {
+    // A common error here is language codes defined in
+    // `CROWDIN_LANGUAGES` that weren’t found in Crowdin.
+    log.error(data.error.message);
+    process.exit(1);
+  });
 
   log.info(`Writing translations to: ${chalk.bold(config.TRANSLATIONS_DIR)}`);
 

@@ -70,11 +70,9 @@ export default async (isTS = false) => {
 
   log.info("Running Prettier on downloaded files");
 
-  const prettier = `${config.BIN}/prettier`;
-
   shell.exec(
     [
-      prettier,
+      `${config.BIN}/prettier`,
       "--loglevel silent",
       `--write "${config.TRANSLATIONS_DIR}/*.+(${fileExtension})"`,
     ].join(" ")

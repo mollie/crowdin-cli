@@ -13,6 +13,7 @@ export default (data: ExportFileResponse) => {
           "i",
           "em",
           "strong",
+          "small",
           "a",
           "p",
           "ul",
@@ -22,6 +23,8 @@ export default (data: ExportFileResponse) => {
           "h2",
           "h3",
           "h4",
+          "h5",
+          "h6",
           "br",
         ],
         allowedAttributes: {

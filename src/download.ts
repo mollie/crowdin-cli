@@ -68,15 +68,18 @@ export default async (isTS = false) => {
     })
   );
 
-  log.info("Running Prettier on downloaded files");
+  const prettierExecutable = `${config.BIN}/prettier`;
 
-  shell.exec(
-    [
-      `${config.BIN}/prettier`,
-      "--loglevel silent",
-      `--write "${config.TRANSLATIONS_DIR}/*.+(${fileExtension})"`,
-    ].join(" ")
-  );
+  if (fs.existsSync(prettierExecutable)) {
+    log.info("Formatting downloaded files with Prettier");
+    shell.exec(
+      [
+        prettierExecutable,
+        "--loglevel silent",
+        `--write "${config.TRANSLATIONS_DIR}/*.+(${fileExtension})"`,
+      ].join(" ")
+    );
+  }
 
   log.success("Translations updated");
 };

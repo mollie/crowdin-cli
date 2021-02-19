@@ -29,7 +29,7 @@ export default async (isTS = false) => {
   if (isCommonErrorResponse(updateResponse)) {
     log.error(
       updateResponse.error.message ||
-        `Something went wrong while uploading the source file`
+        "Something went wrong while uploading the source file"
     );
     process.exit(1);
   }

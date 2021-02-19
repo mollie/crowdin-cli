@@ -9,6 +9,7 @@ import CrowdinApiClient, {
   ValidationErrorResponse,
   Error,
 } from "@crowdin/crowdin-api-client";
+import chalk from "chalk";
 import fs from "fs";
 import config from "../config";
 import { CrowdinResponse, ExportFileResponse } from "../types";
@@ -88,10 +89,22 @@ export const createFile = async (
 export const updateOrRestoreFile = async (
   branchName: string,
   file: fs.ReadStream
-): Promise<ResponseObject<SourceFilesModel.File>> => {
+): Promise<ResponseObject<SourceFilesModel.File> | CommonErrorResponse> => {
   const storage = await addStorage(file);
   const branches = await listBranches(branchName);
-  const branchId = branches.data[0].data.id;
+  const branchId = branches?.data[0]?.data?.id;
+
+  if (!branchId) {
+    return {
+      error: {
+        code: "branchNotFound",
+        message: `Couldn’t find a branch with the name ${chalk.bold(
+          branchName
+        )}`,
+      },
+    };
+  }
+
   const files = await listFiles(branchId);
   const fileId = files.data[0].data.id;
 

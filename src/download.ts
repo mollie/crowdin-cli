@@ -7,6 +7,7 @@ import {
   updateOrRestoreFile,
   exportFile,
   isCommonErrorResponse,
+  unwrapValidationErrorResponse,
 } from "./lib/crowdin";
 import log from "./utils/logging";
 import convertToKeyValue from "./utils/convert-to-key-value";
@@ -29,7 +30,7 @@ export default async (isTS = false) => {
   if (isCommonErrorResponse(updateResponse)) {
     log.error(
       updateResponse.error.message ||
-        `Something went wrong while uploading the source file`
+        "Something went wrong while uploading the source file"
     );
     process.exit(1);
   }
@@ -43,7 +44,17 @@ export default async (isTS = false) => {
   ).catch(data => {
     // A common error here is language codes defined in
     // `CROWDIN_LANGUAGES` that weren’t found in Crowdin.
-    log.error(data.error.message);
+
+    if (isCommonErrorResponse(data)) {
+      log.error(data.error.message);
+    }
+
+    if (unwrapValidationErrorResponse(data)?.code === "notInArray") {
+      log.error(
+        "Target language not found. Make sure `CROWDIN_LANGUAGES` is correct."
+      );
+    }
+
     process.exit(1);
   });
 

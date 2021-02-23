@@ -29,7 +29,7 @@ const {
 export const unwrapValidationErrorResponse = (
   response: ValidationErrorResponse
 ): Error => {
-  return response.errors[0].error.errors[0];
+  return response?.errors[0]?.error?.errors[0];
 };
 
 export const isCommonErrorResponse = (

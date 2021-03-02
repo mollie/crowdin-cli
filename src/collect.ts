@@ -10,7 +10,6 @@ export default async (glob: string) => {
   sync(config.INTL_DIR);
 
   const cmd = [
-    process.execPath,
     path.join(process.cwd(), "node_modules", ".bin", "formatjs"),
     "extract",
     `"${glob}"`,

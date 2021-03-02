@@ -5,13 +5,16 @@ import collect from "./collect";
 import deleteBranch from "./delete-branch";
 import config from "./config";
 
+class BranchNameOption extends Option {
+  constructor(description: string) {
+    super("-b, --branch-name [string]", description);
+    this.default(config.BRANCH_NAME);
+  }
+}
+
 const main = async (argv: string[]) => {
   const program = new Command();
   const version = require("../package.json").version;
-  const branchOption = new Option(
-    "-b, --branch-name [string]",
-    "the Crowdin branch name where to sync the translations"
-  ).default(config.BRANCH_NAME);
 
   program
     .name("mollie-crowdin")
@@ -21,7 +24,11 @@ const main = async (argv: string[]) => {
   program
     .command("upload <glob>")
     .description("scan the directory for new messages and upload them")
-    .addOption(branchOption)
+    .addOption(
+      new BranchNameOption(
+        "the Crowdin branch where to sync the translations to"
+      )
+    )
     .action(async (glob: string, options: { branchName: string }) => {
       await collect(glob);
       await upload({
@@ -43,7 +50,11 @@ const main = async (argv: string[]) => {
     .command("download")
     .description("download new translations from Crowdin")
     .option("--typescript", "write to TypeScript files (.ts)", false)
-    .addOption(branchOption)
+    .addOption(
+      new BranchNameOption(
+        "the Crowdin branch from where to download the translations"
+      )
+    )
     .action(async (options: { typescript: boolean; branchName: string }) => {
       await download({
         translationsFile: config.TRANSLATIONS_FILE,
@@ -57,7 +68,7 @@ const main = async (argv: string[]) => {
   program
     .command("delete-branch")
     .description("clean up branches in Crowdin")
-    .addOption(branchOption)
+    .addOption(new BranchNameOption("the Crowdin branch to be deleted"))
     .action(async (options: { branchName: string }) => {
       await deleteBranch({
         branchName: options.branchName,

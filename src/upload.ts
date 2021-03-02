@@ -16,7 +16,7 @@ export default async () => {
   const file = fs.createReadStream(config.TRANSLATIONS_FILE);
 
   try {
-    const response = await createBranch(config.BRANCH_NAME);
+    const response = await createBranch(config.CROWDIN_BRANCH_NAME);
 
     if (isCommonErrorResponse(response)) {
       log.error(response.error.message);
@@ -32,13 +32,17 @@ export default async () => {
 
     if (error.code === "notUnique") {
       // Branch already exists. Update the file.
-      log.info(`Branch ${chalk.bold(config.BRANCH_NAME)} already exists`);
       log.info(
-        `Updating source file in branch: ${chalk.bold(config.BRANCH_NAME)}`
+        `Branch ${chalk.bold(config.CROWDIN_BRANCH_NAME)} already exists`
+      );
+      log.info(
+        `Updating source file in branch: ${chalk.bold(
+          config.CROWDIN_BRANCH_NAME
+        )}`
       );
 
       try {
-        await updateOrRestoreFile(config.BRANCH_NAME, file);
+        await updateOrRestoreFile(config.CROWDIN_BRANCH_NAME, file);
         log.success("Source file updated");
       } catch (error) {
         log.error(error);

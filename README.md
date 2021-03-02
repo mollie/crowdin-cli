@@ -28,6 +28,14 @@ In your `package.json`, add these scripts:
 "crowdin:delete-branch": "mollie-crowdin delete-branch"
 ```
 
+## Branch name
+
+By default the `@mollie/crowdin-in` uses the current git branch name for the syncing to the Crowdin branch. It is possible to override that by defining a `CROWDIN_BRANCH_NAME` environment variable in the `.env` file
+
+```shell
+CROWDIN_BRANCH_NAME={your-branch-name}
+```
+
 ## TypeScript
 
 To write the downloaded messages to TypeScript (.ts) files, pass the `--typescript` flag to the `download` command.

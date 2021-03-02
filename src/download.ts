@@ -25,7 +25,10 @@ export default async (isTS = false) => {
 
   const file = fs.createReadStream(config.TRANSLATIONS_FILE);
   const fileExtension = isTS ? "ts" : "js";
-  const updateResponse = await updateOrRestoreFile(config.BRANCH_NAME, file);
+  const updateResponse = await updateOrRestoreFile(
+    config.CROWDIN_BRANCH_NAME,
+    file
+  );
 
   if (isCommonErrorResponse(updateResponse)) {
     log.error(
@@ -39,7 +42,7 @@ export default async (isTS = false) => {
 
   const exportFileResponses = await Promise.all(
     config.CROWDIN_LANGUAGES.map(language => {
-      return exportFile(config.BRANCH_NAME, language);
+      return exportFile(config.CROWDIN_BRANCH_NAME, language);
     })
   ).catch(data => {
     // A common error here is language codes defined in

@@ -18,7 +18,7 @@ if (
 const { stdout } = shell.exec("git rev-parse --abbrev-ref HEAD | tr / -", {
   silent: true,
 });
-const branch =
+const gitBranchName =
   process.env.NODE_ENV !== "test" ? stdout.replace("\n", "") : "test-branch";
 const PROJECT_DIR = process.cwd();
 const WORKING_DIR =
@@ -30,11 +30,11 @@ const projectLanguages: string[] = process.env.CROWDIN_LANGUAGES.split(
 
 const config: Config = {
   BIN: `${PROJECT_DIR}/node_modules/.bin`,
-  BRANCH_NAME: branch,
   FILE_NAME: "source.json",
   CROWDIN_PERSONAL_ACCESS_TOKEN:
     process.env.CROWDIN_PERSONAL_ACCESS_TOKEN || "",
   CROWDIN_PROJECT_ID: Number(process.env.CROWDIN_PROJECT_ID),
+  CROWDIN_BRANCH_NAME: process.env.CROWDIN_BRANCH_NAME || gitBranchName,
   CROWDIN_LANGUAGES: projectLanguages,
   INTL_DIR,
   NODE_EXEC: process.execPath,

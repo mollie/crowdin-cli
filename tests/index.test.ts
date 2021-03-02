@@ -165,7 +165,7 @@ describe("Handlers", () => {
     expect(sourceFilesApi.createBranch).toHaveBeenCalledWith(
       config.CROWDIN_PROJECT_ID,
       {
-        name: config.BRANCH_NAME,
+        name: config.CROWDIN_BRANCH_NAME,
       }
     );
 

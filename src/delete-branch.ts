@@ -6,7 +6,7 @@ export default async () => {
   log.info("Deleting branch from Crowdin");
 
   try {
-    await deleteBranch(config.BRANCH_NAME);
+    await deleteBranch(config.CROWDIN_BRANCH_NAME);
     log.success("Branch deleted");
   } catch (error) {
     log.error(error);

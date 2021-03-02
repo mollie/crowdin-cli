@@ -30,10 +30,10 @@ In your `package.json`, add these scripts:
 
 ## Branch name
 
-By default the `@mollie/crowdin-in` uses the current git branch name for the syncing to the Crowdin branch. It is possible to override that by defining a `CROWDIN_BRANCH_NAME` environment variable in the `.env` file
+By default the `@mollie/crowdin-cli` uses the current git branch name for the syncing to the Crowdin branch. It is possible to override that by passing a `--branch-name` option (or `-b` ) to the `upload`, `download` and `delete-branch` commands. For example, the following command will collect and upload the translations to a branch named `custom-branch-name`.
 
 ```shell
-CROWDIN_BRANCH_NAME={your-branch-name}
+$ mollie-crowdin upload './src/**/!(*.{d,test})*.ts*' --branch-name custom-branch-name
 ```
 
 ## TypeScript

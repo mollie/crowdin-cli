@@ -1,5 +1,4 @@
 import fs from "fs";
-import config from "./config";
 import {
   createFile,
   updateOrRestoreFile,
@@ -10,13 +9,18 @@ import {
 import log from "./utils/logging";
 import chalk from "chalk";
 
-export default async () => {
+interface UploadOptions {
+  translationsFile: string;
+  branchName: string;
+}
+
+export default async (options: UploadOptions) => {
   log.info("Uploading source file to Crowdin");
 
-  const file = fs.createReadStream(config.TRANSLATIONS_FILE);
+  const file = fs.createReadStream(options.translationsFile);
 
   try {
-    const response = await createBranch(config.CROWDIN_BRANCH_NAME);
+    const response = await createBranch(options.branchName);
 
     if (isCommonErrorResponse(response)) {
       log.error(response.error.message);
@@ -32,17 +36,13 @@ export default async () => {
 
     if (error.code === "notUnique") {
       // Branch already exists. Update the file.
+      log.info(`Branch ${chalk.bold(options.branchName)} already exists`);
       log.info(
-        `Branch ${chalk.bold(config.CROWDIN_BRANCH_NAME)} already exists`
-      );
-      log.info(
-        `Updating source file in branch: ${chalk.bold(
-          config.CROWDIN_BRANCH_NAME
-        )}`
+        `Updating source file in branch: ${chalk.bold(options.branchName)}`
       );
 
       try {
-        await updateOrRestoreFile(config.CROWDIN_BRANCH_NAME, file);
+        await updateOrRestoreFile(options.branchName, file);
         log.success("Source file updated");
       } catch (error) {
         log.error(error);

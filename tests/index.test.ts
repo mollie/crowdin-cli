@@ -104,23 +104,63 @@ describe("CLI", () => {
 
   it("correctly handles `upload` command", async () => {
     await program(["node", "test", "upload", mockGlob]);
-    expect(collect).toHaveBeenCalledTimes(1);
     expect(collect).toHaveBeenCalledWith(mockGlob);
-    expect(upload).toHaveBeenCalledTimes(1);
+    await program([
+      "node",
+      "test",
+      "upload",
+      mockGlob,
+      "-b",
+      "custom-branch-name",
+    ]);
+    expect(upload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        branchName: "custom-branch-name",
+      })
+    );
+    expect(collect).toHaveBeenCalledTimes(2);
+    expect(upload).toHaveBeenCalledTimes(2);
   });
 
   it("correctly handles `download` command", async () => {
     await program(["node", "test", "download"]);
-    expect(download).toHaveBeenCalledTimes(1);
-    expect(download).toHaveBeenCalledWith(false);
+    expect(download).toHaveBeenCalledWith(
+      expect.objectContaining({ typescript: false })
+    );
+    await program(["node", "test", "download", "-b", "custom-branch-name"]);
+    expect(download).toHaveBeenCalledWith(
+      expect.objectContaining({
+        typescript: false,
+        branchName: "custom-branch-name",
+      })
+    );
     await program(["node", "test", "download", "--typescript"]);
-    expect(download).toHaveBeenCalledTimes(2);
-    expect(download).toHaveBeenCalledWith(true);
+    expect(download).toHaveBeenCalledWith(
+      expect.objectContaining({ typescript: true })
+    );
+    expect(download).toHaveBeenCalledTimes(3);
   });
 
   it("correctly handles `delete-branch` command", async () => {
     await program(["node", "test", "delete-branch"]);
-    expect(deleteBranch).toHaveBeenCalledTimes(1);
+    expect(deleteBranch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        branchName: config.BRANCH_NAME,
+      })
+    );
+    await program([
+      "node",
+      "test",
+      "delete-branch",
+      "--branch-name",
+      "custom-branch-name",
+    ]);
+    expect(deleteBranch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        branchName: "custom-branch-name",
+      })
+    );
+    expect(deleteBranch).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -159,13 +199,16 @@ describe("Handlers", () => {
       credentials
     );
 
-    await upload();
+    await upload({
+      translationsFile: config.TRANSLATIONS_FILE,
+      branchName: config.BRANCH_NAME,
+    });
 
     expect(sourceFilesApi.createBranch).toHaveBeenCalledTimes(1);
     expect(sourceFilesApi.createBranch).toHaveBeenCalledWith(
       config.CROWDIN_PROJECT_ID,
       {
-        name: config.CROWDIN_BRANCH_NAME,
+        name: config.BRANCH_NAME,
       }
     );
 
@@ -185,7 +228,13 @@ describe("Handlers", () => {
   it("downloads messages of the specified branch from Crowdin", async () => {
     expect.assertions(1);
     await collect(mockGlob);
-    await download();
+    await download({
+      translationsFile: config.TRANSLATIONS_FILE,
+      translationsDir: config.TRANSLATIONS_DIR,
+      branchName: config.BRANCH_NAME,
+      languages: config.CROWDIN_LANGUAGES,
+      typescript: false,
+    });
     const file = fs.readFileSync(`${config.TRANSLATIONS_DIR}/nl.js`).toString();
     expect(file).toMatchSnapshot();
   });

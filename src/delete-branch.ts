@@ -1,12 +1,15 @@
-import config from "./config";
 import { deleteBranch } from "./lib/crowdin";
 import log from "./utils/logging";
 
-export default async () => {
+interface DeleteBranchOptions {
+  branchName: string;
+}
+
+export default async (options: DeleteBranchOptions) => {
   log.info("Deleting branch from Crowdin");
 
   try {
-    await deleteBranch(config.CROWDIN_BRANCH_NAME);
+    await deleteBranch(options.branchName);
     log.success("Branch deleted");
   } catch (error) {
     log.error(error);

@@ -2,7 +2,8 @@
   "include": ["src", "types"],
   "compilerOptions": {
     "module": "esnext",
-    "lib": ["dom", "esnext"],
+    "lib": ["esnext"],
+    "target": "ES2015",
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,

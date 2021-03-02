@@ -28,6 +28,14 @@ In your `package.json`, add these scripts:
 "crowdin:delete-branch": "mollie-crowdin delete-branch"
 ```
 
+## Crowdin branch name
+
+By default, `@mollie/crowdin-cli` will create a branch in Crowdin with the same name as the currently checked out branch in Git. It is possible to override this behaviour by passing a `--branch-name` option (or `-b` ) to the `upload`, `download` and `delete-branch` commands. For example, the following command will collect and upload messages to a branch named `custom-branch-name` in Crowdin.
+
+```shell
+$ mollie-crowdin upload './src/**/!(*.{d,test})*.ts*' --branch-name custom-branch-name
+```
+
 ## TypeScript
 
 To write the downloaded messages to TypeScript (.ts) files, pass the `--typescript` flag to the `download` command.

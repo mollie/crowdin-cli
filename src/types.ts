@@ -12,14 +12,12 @@ export interface ExportFileResponse {
 }
 
 export interface Config {
-  BIN: string;
   BRANCH_NAME: string;
   FILE_NAME: string;
   CROWDIN_PERSONAL_ACCESS_TOKEN: string;
   CROWDIN_PROJECT_ID: number;
   CROWDIN_LANGUAGES: string[];
   INTL_DIR: string;
-  NODE_EXEC: string;
   TRANSLATIONS_DIR: string;
   TRANSLATIONS_FILE: string;
 }

@@ -1,11 +1,19 @@
-import commander from "commander";
+import { Command, Option } from "commander";
 import upload from "./upload";
 import download from "./download";
 import collect from "./collect";
 import deleteBranch from "./delete-branch";
+import config from "./config";
+
+class BranchNameOption extends Option {
+  constructor(description: string) {
+    super("-b, --branch-name [string]", description);
+    this.default(config.BRANCH_NAME);
+  }
+}
 
 const main = async (argv: string[]) => {
-  const program = new commander.Command();
+  const program = new Command();
   const version = require("../package.json").version;
 
   program
@@ -16,9 +24,17 @@ const main = async (argv: string[]) => {
   program
     .command("upload <glob>")
     .description("scan the directory for new messages and upload them")
-    .action(async (glob: string) => {
+    .addOption(
+      new BranchNameOption(
+        "the Crowdin branch where to sync the translations to"
+      )
+    )
+    .action(async (glob: string, options: { branchName: string }) => {
       await collect(glob);
-      await upload();
+      await upload({
+        translationsFile: config.TRANSLATIONS_FILE,
+        branchName: options.branchName,
+      });
     });
 
   program
@@ -33,16 +49,30 @@ const main = async (argv: string[]) => {
   program
     .command("download")
     .description("download new translations from Crowdin")
-    .option("--typescript", "write to TypeScript files (.ts)")
-    .action(async (options: { typescript?: boolean }) => {
-      await download(options?.typescript === true);
+    .option("--typescript", "write to TypeScript files (.ts)", false)
+    .addOption(
+      new BranchNameOption(
+        "the Crowdin branch from where to download the translations"
+      )
+    )
+    .action(async (options: { typescript: boolean; branchName: string }) => {
+      await download({
+        translationsFile: config.TRANSLATIONS_FILE,
+        translationsDir: config.TRANSLATIONS_DIR,
+        languages: config.CROWDIN_LANGUAGES,
+        branchName: options.branchName,
+        typescript: options.typescript,
+      });
     });
 
   program
     .command("delete-branch")
     .description("clean up branches in Crowdin")
-    .action(async () => {
-      await deleteBranch();
+    .addOption(new BranchNameOption("the Crowdin branch to be deleted"))
+    .action(async (options: { branchName: string }) => {
+      await deleteBranch({
+        branchName: options.branchName,
+      });
     });
 
   program.parse(argv);

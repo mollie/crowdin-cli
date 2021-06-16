@@ -1,5 +1,4 @@
 import { ExportFileResponse } from "../types";
-import sanitize from "sanitize-html";
 
 export default (data: ExportFileResponse) => {
   const collection: { [key: string]: any } = {};
@@ -7,12 +6,7 @@ export default (data: ExportFileResponse) => {
   Object.keys(data)
     .sort()
     .forEach(key => {
-      collection[key] = sanitize(data[key].message, {
-        allowedAttributes: {
-          a: ["href", "name", "rel", "target"],
-        },
-        textFilter: text => text.replace("&amp;", "&"),
-      });
+      collection[key] = data[key].message;
     });
 
   return collection;

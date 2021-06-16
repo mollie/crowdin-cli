@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "license": "MIT",
   "name": "@mollie/crowdin-cli",
   "author": {
@@ -18,6 +18,10 @@
     {
       "name": "Vernon de Goede",
       "email": "vernon@mollie.com"
+    },
+    {
+      "name": "Marino Linderhof",
+      "email": "marino@mollie.com"
     }
   ],
   "main": "dist/index.js",

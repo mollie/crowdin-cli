@@ -43,3 +43,12 @@ To write the downloaded messages to TypeScript (.ts) files, pass the `--typescri
 ```shell
 "crowdin:download": "mollie-crowdin download --typescript"
 ```
+
+## Development
+
+Install the dependencies:
+
+```shell
+    nvm install
+    yarn install
+```

@@ -7,7 +7,7 @@ export default async (glob: string, filename: string) => {
     "extract",
     `"${glob}"`,
     "--out-file",
-    filename,
+    `"${filename}"`,
     "--format",
     "crowdin",
   ];
@@ -15,6 +15,6 @@ export default async (glob: string, filename: string) => {
   const { stderr } = shell.exec(cmd.join(" "));
 
   if (stderr) {
-    throw stderr;
+    throw new Error(stderr);
   }
 };

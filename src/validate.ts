@@ -47,9 +47,18 @@ export default async (glob: string) => {
 
   messageKeys.forEach(messageKey => {
     if (!(messageKey in projectTranslations)) {
+      /*
+       * Message is not present in the translations file.
+       */
+      log.error(`Missing message ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
 
-      log.error(`Missing message key ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
+      badApples++;
+    } else if (projectMessages[messageKey].message == projectTranslations[messageKey])  {
 
+      /*
+       * Message is the same in the translations file as in the source file.
+       */
+      log.error(`Untranslated message ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
       badApples++;
     }
   });
@@ -64,17 +73,19 @@ export default async (glob: string) => {
 
 function getTranslatedMessages(lang: string)
 {
+  /*
+   * Only Typescript is supported, sorry!
+   */
   const translationsFile = path.join(config.TRANSLATIONS_DIR, lang + ".ts");
-
 
   const translationTypeScriptExport = fs.readFileSync(translationsFile,"utf-8");
 
-  const roo = ts.transpileModule(translationTypeScriptExport, {
+  const transpileOutput = ts.transpileModule(translationTypeScriptExport, {
     compilerOptions: {
       removeComments: true,
       module: ts.ModuleKind.CommonJS
     }
   });
 
-  return eval(roo.outputText);
+  return eval(transpileOutput.outputText);
 }

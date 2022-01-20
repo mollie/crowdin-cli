@@ -1,6 +1,6 @@
 # Crowdin CLI
 
-A little helper to sync messages with Crowdin. It uses [`@formatjs/cli`](https://formatjs.io/docs/tooling/cli/) to extract messages from your application.
+A little helper to sync messages with [Crowdin](https://crowdin.com/). It uses [`@formatjs/cli`](https://formatjs.io/docs/tooling/cli/) to extract messages from your application.
 
 ## Installation
 
@@ -28,12 +28,18 @@ In your `package.json`, add these scripts:
 "crowdin:delete-branch": "mollie-crowdin delete-branch"
 ```
 
+Extract all messages from your application by using:
+
+```shell
+$ mollie-crowdin collect './src/**/!(*.{d,test})*.ts*'
+```
+
 ## Crowdin branch name
 
 By default, `@mollie/crowdin-cli` will create a branch in Crowdin with the same name as the currently checked out branch in Git. It is possible to override this behaviour by passing a `--branch-name` option (or `-b` ) to the `upload`, `download` and `delete-branch` commands. For example, the following command will collect and upload messages to a branch named `custom-branch-name` in Crowdin.
 
 ```shell
-$ mollie-crowdin upload './src/**/!(*.{d,test})*.ts*' --branch-name custom-branch-name
+$ mollie-crowdin upload './src/**/!(*.{d,test})*.ts*' --branch-name 'custom-branch-name'
 ```
 
 ## TypeScript
@@ -42,4 +48,13 @@ To write the downloaded messages to TypeScript (.ts) files, pass the `--typescri
 
 ```shell
 "crowdin:download": "mollie-crowdin download --typescript"
+```
+
+## Development
+
+Install the dependencies:
+
+```shell
+    nvm install
+    yarn install
 ```

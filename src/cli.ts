@@ -78,10 +78,10 @@ const main = async (argv: string[]) => {
 
   program
     .command("validate <glob>")
-    .description("Validate if all translations keys have been translated")
-    // .addOption("languages")
-    .action(async (glob: string) => {
-      await validate(glob);
+    .description("Validate if all translations keys have been translated for a set of languages")
+    .requiredOption("-l, --language <language...>", "Language to validate, e.g. \"nl\".")
+    .action(async (glob: string, options) => {
+      await validate(glob, options);
     });
 
   program.parse(argv);

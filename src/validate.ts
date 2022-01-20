@@ -12,10 +12,8 @@ import * as ts from "typescript";
 // import tempy from "tempy";
 import chalk from "chalk";
 
-export default async (glob: string) => {
+export default async (glob: string, options: { language: string[]; }) => {
   log.info("Collecting message keys from source files...");
-
-  const language = "de";
 
   /*
    * Create a temporary file for FormatJS, this way we won't mess with the existing file which is under version control.
@@ -32,38 +30,39 @@ export default async (glob: string) => {
   const projectMessagesJson = fs.readFileSync(temporaryFileName, "utf-8");
   fs.unlinkSync(temporaryFileName); // File is no longer needed.
 
-  log.info(`Retrieving ${chalk.bold(language)} translations from project...`);
-
-  const projectMessages = JSON.parse(projectMessagesJson);
-  const messageKeys = Object.keys(projectMessages);
-
-  const projectTranslations = getTranslatedMessages(language);
-
-  // @TODO: as mvp just looping over keys to check if they exist
-  // improvements; ensure keys are different
-  // have the correct placeholders
-
   let badApples = 0;
 
-  messageKeys.forEach(messageKey => {
-    if (!(messageKey in projectTranslations)) {
-      /*
-       * Message is not present in the translations file.
-       */
-      log.error(`Missing message ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
+  options.language.forEach((language: string) => {
 
-      badApples++;
-    } else if (projectMessages[messageKey].message == projectTranslations[messageKey])  {
+    log.info(`Retrieving ${chalk.bold(language)} translations from project...`);
 
-      /*
-       * Message is the same in the translations file as in the source file.
-       */
-      log.error(`Untranslated message ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
-      badApples++;
-    }
+    const projectMessages = JSON.parse(projectMessagesJson);
+    const messageKeys = Object.keys(projectMessages);
+
+    const projectTranslations = getTranslatedMessages(language);
+
+    // @TODO: as mvp just looping over keys to check if they exist
+    // have the correct placeholders
+
+    messageKeys.forEach(messageKey => {
+      if (!(messageKey in projectTranslations)) {
+        /*
+         * Message is not present in the translations file.
+         */
+        log.error(`Missing message ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
+
+        badApples++;
+      } else if (projectMessages[messageKey].message == projectTranslations[messageKey]) {
+
+        /*
+         * Message is the same in the translations file as in the source file.
+         */
+        log.error(`Untranslated message ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
+        badApples++;
+      }
+    });
   });
 
-  log.info(`Completed check, all ${messageKeys.length} keys are present for translation.`);
   log.info(`Found ${badApples} problems with the translations.`);
 
   if (badApples > 0) {

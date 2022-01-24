@@ -9,16 +9,15 @@ import log from "./utils/logging";
 import fs from "fs";
 import path from "path";
 import * as ts from "typescript";
-// import tempy from "tempy";
 import chalk from "chalk";
 
-export default async (glob: string, options: { language: string[]; }) => {
+export default async (glob: string, options: { language: string[] }) => {
   log.info("Collecting message keys from source files...");
 
   /*
    * Create a temporary file for FormatJS, this way we won't mess with the existing file which is under version control.
    */
-  const temporaryFileName = "tempy.json" // tempy.file({extension: "json"});
+  const temporaryFileName = "messages.json.tmp";
 
   try {
     await formatjs(glob, temporaryFileName);
@@ -32,8 +31,7 @@ export default async (glob: string, options: { language: string[]; }) => {
 
   let badApples = 0;
 
-  options.language.forEach((language: string) => {
-
+  options.language.forEach((language: string): void => {
     log.info(`Retrieving ${chalk.bold(language)} translations from project...`);
 
     const projectMessages = JSON.parse(projectMessagesJson);
@@ -49,15 +47,24 @@ export default async (glob: string, options: { language: string[]; }) => {
         /*
          * Message is not present in the translations file.
          */
-        log.error(`Missing message ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
+        log.error(
+          `Missing message ${chalk.bold(messageKey)} in language ${chalk.bold(
+            language
+          )}.`
+        );
 
         badApples++;
-      } else if (projectMessages[messageKey].message == projectTranslations[messageKey]) {
-
+      } else if (
+        projectMessages[messageKey].message === projectTranslations[messageKey]
+      ) {
         /*
          * Message is the same in the translations file as in the source file.
          */
-        log.error(`Untranslated message ${chalk.bold(messageKey)} in language ${chalk.bold(language)}.`);
+        log.error(
+          `Untranslated message ${chalk.bold(
+            messageKey
+          )} in language ${chalk.bold(language)}.`
+        );
         badApples++;
       }
     });
@@ -70,20 +77,27 @@ export default async (glob: string, options: { language: string[]; }) => {
   }
 };
 
-function getTranslatedMessages(lang: string)
-{
+/**
+ * Get the translations that are in the project and convert them to an object. Returns an object with the keys being
+ * the message keys and each value being an object with the keys message and optionally description.
+ * @param lang
+ */
+function getTranslatedMessages(lang: string): object {
   /*
    * Only Typescript is supported, sorry!
    */
   const translationsFile = path.join(config.TRANSLATIONS_DIR, lang + ".ts");
 
-  const translationTypeScriptExport = fs.readFileSync(translationsFile,"utf-8");
+  const translationTypeScriptExport = fs.readFileSync(
+    translationsFile,
+    "utf-8"
+  );
 
   const transpileOutput = ts.transpileModule(translationTypeScriptExport, {
     compilerOptions: {
       removeComments: true,
-      module: ts.ModuleKind.CommonJS
-    }
+      module: ts.ModuleKind.CommonJS,
+    },
   });
 
   return eval(transpileOutput.outputText);

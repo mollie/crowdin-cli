@@ -1,28 +1,17 @@
 import { sync } from "mkdirp";
-import shell from "shelljs";
-import path from "path";
 import config from "./config";
 import log from "./utils/logging";
+import formatjs from "./utils/formatjs";
 import prettify from "./utils/prettify";
 
 export default async (glob: string) => {
   log.info("Extracting messages");
-  sync(config.INTL_DIR);
+  sync(config.INTL_DIR); // Create storage dir for transations if not exists
 
-  const cmd = [
-    path.join(process.cwd(), "node_modules", ".bin", "formatjs"),
-    "extract",
-    `"${glob}"`,
-    "--out-file",
-    config.TRANSLATIONS_FILE,
-    "--format",
-    "crowdin",
-  ];
-
-  const { stderr } = shell.exec(cmd.join(" "));
-
-  if (stderr) {
-    log.error(stderr);
+  try {
+    await formatjs(glob, config.TRANSLATIONS_FILE);
+  } catch (error) {
+    log.error(`FormatJS was unable to scan the source files: ${error.message}`);
     process.exit(1);
   }
 

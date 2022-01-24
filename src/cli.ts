@@ -3,6 +3,7 @@ import upload from "./upload";
 import download from "./download";
 import collect from "./collect";
 import deleteBranch from "./delete-branch";
+import validate from "./validate";
 import config from "./config";
 
 class BranchNameOption extends Option {
@@ -18,7 +19,7 @@ const main = async (argv: string[]) => {
 
   program
     .name("mollie-crowdin")
-    .usage("<upload | collect | download | delete-branch> [options]")
+    .usage("<upload | collect | download | delete-branch | validate> [options]")
     .version(version);
 
   program
@@ -73,6 +74,19 @@ const main = async (argv: string[]) => {
       await deleteBranch({
         branchName: options.branchName,
       });
+    });
+
+  program
+    .command("validate <glob>")
+    .description(
+      "Validate if all translations keys have been translated for a set of languages"
+    )
+    .requiredOption(
+      "-l, --language <language...>",
+      'Language to validate, e.g. "nl".'
+    )
+    .action(async (glob: string, options) => {
+      await validate(glob, options);
     });
 
   program.parse(argv);

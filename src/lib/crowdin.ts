@@ -110,6 +110,7 @@ export const updateOrRestoreFile = async (
 
   return sourceFilesApi.updateOrRestoreFile(CROWDIN_PROJECT_ID, fileId, {
     storageId: storage.data.id,
+    updateOption: SourceFilesModel.UpdateOption.KEEP_TRANSLATIONS,
   });
 };
 

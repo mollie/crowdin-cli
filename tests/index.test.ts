@@ -8,8 +8,10 @@ import download from "../src/download";
 import upload from "../src/upload";
 import deleteBranch from "../src/delete-branch";
 
-jest.mock("@crowdin/crowdin-api-client", () =>
-  jest.fn().mockReturnValue({
+jest.mock("@crowdin/crowdin-api-client", () => ({
+  __esModule: true,
+  ...jest.requireActual<any>("@crowdin/crowdin-api-client"),
+  default: jest.fn().mockReturnValue({
     uploadStorageApi: {
       addStorage: jest.fn().mockResolvedValue({
         data: { id: 324234 },
@@ -37,12 +39,13 @@ jest.mock("@crowdin/crowdin-api-client", () =>
         data: { id: 234234 },
       }),
     },
-  })
-);
+  }),
+}));
 
 jest.mock(
   "axios",
   jest.fn().mockReturnValue({
+    ...jest.requireActual("axios"),
     get: jest.fn().mockResolvedValue({
       statusText: "OK",
       data: {

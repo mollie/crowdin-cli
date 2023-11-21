@@ -47,8 +47,10 @@
     "tsc:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@crowdin/crowdin-api-client": "^1.10.3",
+    "@crowdin/crowdin-api-client": "1.15.2",
     "@formatjs/cli": "^3.0.5",
+    "axios": "^0.21.3",
+    "chalk": "^4.0.0",
     "commander": "^7.0.0",
     "dotenv": "^8.2.0",
     "mkdirp": "^1.0.4",

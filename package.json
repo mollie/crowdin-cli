@@ -1,5 +1,5 @@
 {
-  "version": "2.2.2",
+  "version": "3.0.0",
   "license": "MIT",
   "name": "@mollie/crowdin-cli",
   "author": {
@@ -48,11 +48,12 @@
   },
   "dependencies": {
     "@crowdin/crowdin-api-client": "1.15.2",
-    "@formatjs/cli": "^3.0.5",
+    "@formatjs/cli-lib": "^6.3.3",
     "axios": "^0.21.3",
     "chalk": "^4.0.0",
     "commander": "^7.0.0",
     "dotenv": "^8.2.0",
+    "glob": "^10.3.10",
     "mkdirp": "^1.0.4",
     "shelljs": "^0.8.5"
   },
@@ -69,6 +70,7 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx,js,jsx}": [
+      "prettier --write",
       "yarn lint"
     ]
   },

@@ -75,7 +75,7 @@ const main = async (argv: string[]) => {
       });
     });
 
-  program.parse(argv);
+  await program.parseAsync(argv);
 };
 
 export default main;

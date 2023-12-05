@@ -7,6 +7,7 @@ import collect from "../src/collect";
 import download from "../src/download";
 import upload from "../src/upload";
 import deleteBranch from "../src/delete-branch";
+import { sync } from "mkdirp";
 
 jest.mock("@crowdin/crowdin-api-client", () => ({
   __esModule: true,
@@ -108,6 +109,12 @@ describe("CLI", () => {
   it("correctly handles `upload` command", async () => {
     await program(["node", "test", "upload", mockGlob]);
     expect(collect).toHaveBeenCalledWith(mockGlob);
+    expect(upload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        translationsFile: config.TRANSLATIONS_FILE,
+        branchName: "test-branch",
+      })
+    );
     await program([
       "node",
       "test",
@@ -118,6 +125,7 @@ describe("CLI", () => {
     ]);
     expect(upload).toHaveBeenCalledWith(
       expect.objectContaining({
+        translationsFile: config.TRANSLATIONS_FILE,
         branchName: "custom-branch-name",
       })
     );
@@ -126,6 +134,9 @@ describe("CLI", () => {
   });
 
   it("correctly handles `download` command", async () => {
+    sync(`${config.INTL_DIR}`);
+    fs.writeFileSync(`${config.INTL_DIR}/english.source.json`, "");
+
     await program(["node", "test", "download"]);
     expect(download).toHaveBeenCalledWith(
       expect.objectContaining({ typescript: false })
@@ -170,8 +181,8 @@ describe("CLI", () => {
 describe("Handlers", () => {
   beforeEach(() => {
     // Clean up auto-generated directories
-    fs.rmdirSync(config.INTL_DIR, { recursive: true });
-    fs.rmdirSync(config.TRANSLATIONS_DIR, { recursive: true });
+    fs.rmSync(config.INTL_DIR, { recursive: true, force: true });
+    fs.rmSync(config.TRANSLATIONS_DIR, { recursive: true, force: true });
   });
 
   afterEach(() => {

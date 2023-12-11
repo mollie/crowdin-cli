@@ -23,6 +23,13 @@ const parseIntArgument = (value: string) => {
   return parsedValue;
 };
 
+class PreTranslateOption extends Option {
+  constructor(description: string) {
+    super("-b, --pre-translate", description);
+    this.default(false);
+  }
+}
+
 const main = async (argv: string[]) => {
   const program = new Command();
   const version = require("../package.json").version;
@@ -42,13 +49,24 @@ const main = async (argv: string[]) => {
         "the Crowdin branch where to sync the translations to"
       )
     )
-    .action(async (glob: string, options: { branchName: string }) => {
-      await collect(glob);
-      await upload({
-        translationsFile: config.TRANSLATIONS_FILE,
-        branchName: options.branchName,
-      });
-    });
+    .addOption(
+      new PreTranslateOption(
+        "whether to generate pre-translations for the uploaded files"
+      )
+    )
+    .action(
+      async (
+        glob: string,
+        options: { branchName: string; preTranslate: boolean }
+      ) => {
+        await collect(glob);
+        await upload({
+          translationsFile: config.TRANSLATIONS_FILE,
+          branchName: options.branchName,
+          preTranslate: options.preTranslate,
+        });
+      }
+    );
 
   program
     .command("create-tasks")

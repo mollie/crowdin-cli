@@ -13,6 +13,7 @@ import chalk from "chalk";
 interface UploadOptions {
   translationsFile: string;
   branchName: string;
+  preTranslate: boolean;
 }
 
 export default async (options: UploadOptions) => {
@@ -33,8 +34,11 @@ export default async (options: UploadOptions) => {
           fileResponse.data.id
         }) to branch: ${chalk.bold(branchResponse.data.name)}`
       );
-      await applyPreTranslations(fileResponse.data.id);
-      log.success(`Successfully applied pre-translations`);
+
+      if (options.preTranslate) {
+        await applyPreTranslations(fileResponse.data.id);
+        log.success(`Successfully applied pre-translations`);
+      }
     }
   } catch (errorResponse) {
     const error = unwrapValidationErrorResponse(errorResponse);
@@ -47,7 +51,16 @@ export default async (options: UploadOptions) => {
       );
 
       try {
-        await updateOrRestoreFile(options.branchName, file);
+        const fileResponse = await updateOrRestoreFile(
+          options.branchName,
+          file
+        );
+
+        if (!isCommonErrorResponse(fileResponse) && options.preTranslate) {
+          await applyPreTranslations(fileResponse.data.id);
+          log.success(`Successfully applied pre-translations`);
+        }
+
         log.success("Source file updated");
       } catch (error) {
         log.error(error);

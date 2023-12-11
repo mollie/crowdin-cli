@@ -1,18 +1,19 @@
 {
   "version": "0.1.3",
   "license": "MIT",
+  "name": "@mollie/crowdin-cli",
   "author": {
-    "name": "Philipp Rappold",
-    "email": "philipp.rappold@mollie.com"
+    "name": "Angelo Abdoelsamath",
+    "email": "angelo.abdoelsamath@mollie.com"
   },
   "contributors": [
     {
-      "name": "Angelo Abdoelsamath",
-      "email": "angelo.abdoelsamath@mollie.com"
-    },
-    {
       "name": "Damiano Trimboli",
       "email": "damiano.trimboli@mollie.com"
+    },
+    {
+      "name": "Philipp Rappold",
+      "email": "philipp.rappold@mollie.com"
     },
     {
       "name": "Vernon de Goede",
@@ -89,17 +90,5 @@
     "setupFiles": [
       "./tests/setup.ts"
     ]
-  },
-  "description": "A little helper to sync messages with [Crowdin](https://crowdin.com/). It uses [`@formatjs/cli`](https://formatjs.io/docs/tooling/cli/) to extract messages from your application.",
-  "directories": {
-    "test": "tests"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mollie/crowdin-cli.git"
-  },
-  "bugs": {
-    "url": "https://github.com/mollie/crowdin-cli/issues"
-  },
-  "homepage": "https://github.com/mollie/crowdin-cli#readme"
+  }
 }

@@ -20,4 +20,6 @@ export interface Config {
   INTL_DIR: string;
   TRANSLATIONS_DIR: string;
   TRANSLATIONS_FILE: string;
+  DEEPL_ENGINE_ID: number;
+  DEEPL_SUPPORTED_LANGUAGES: string[];
 }

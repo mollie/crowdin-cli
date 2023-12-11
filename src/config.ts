@@ -36,6 +36,16 @@ const config: Config = {
   INTL_DIR,
   TRANSLATIONS_DIR: `${WORKING_DIR}/src/intl`,
   TRANSLATIONS_FILE: `${INTL_DIR}/english.source.json`,
+  DEEPL_ENGINE_ID: 418490,
+  DEEPL_SUPPORTED_LANGUAGES: [
+    "nl",
+    "en-GB",
+    "en-US",
+    "de",
+    "es-ES",
+    "fr",
+    "it",
+  ],
 };
 
 export default config;

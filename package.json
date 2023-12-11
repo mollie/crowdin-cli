@@ -1,29 +1,11 @@
 {
   "version": "3.0.0",
   "license": "MIT",
-  "name": "@mollie/crowdin-cli",
+  "name": "@rppld/crowdin-cli",
   "author": {
-    "name": "Angelo Abdoelsamath",
-    "email": "angelo.abdoelsamath@mollie.com"
+    "name": "Philipp Rappold",
+    "email": "philipp.rappold@mollie.com"
   },
-  "contributors": [
-    {
-      "name": "Damiano Trimboli",
-      "email": "damiano.trimboli@mollie.com"
-    },
-    {
-      "name": "Philipp Rappold",
-      "email": "philipp.rappold@mollie.com"
-    },
-    {
-      "name": "Vernon de Goede",
-      "email": "vernon@mollie.com"
-    },
-    {
-      "name": "Marino Linderhof",
-      "email": "marino@mollie.com"
-    }
-  ],
   "main": "dist/index.js",
   "module": "dist/crowdin-test.esm.js",
   "typings": "dist/index.d.ts",

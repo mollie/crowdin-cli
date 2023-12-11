@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import CrowdinApiClient, {
   CommonErrorResponse,
-  Credentials,
   SourceFilesModel,
   UploadStorageModel,
   ResponseList,
@@ -23,15 +22,13 @@ const {
   DEEPL_SUPPORTED_LANGUAGES,
 } = config;
 
-const credentials: Credentials = {
-  token: CROWDIN_PERSONAL_ACCESS_TOKEN,
-};
-
 const {
   translationsApi,
   sourceFilesApi,
   uploadStorageApi,
-} = new CrowdinApiClient(credentials);
+} = new CrowdinApiClient({
+  token: CROWDIN_PERSONAL_ACCESS_TOKEN,
+});
 
 export const unwrapValidationErrorResponse = (
   response: CommonErrorResponse | ValidationErrorResponse

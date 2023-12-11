@@ -3,17 +3,17 @@
   "license": "MIT",
   "name": "@mollie/crowdin-cli",
   "author": {
-    "name": "Angelo Abdoelsamath",
-    "email": "angelo.abdoelsamath@mollie.com"
+    "name": "Philipp Rappold",
+    "email": "philipp.rappold@mollie.com"
   },
   "contributors": [
     {
-      "name": "Damiano Trimboli",
-      "email": "damiano.trimboli@mollie.com"
+      "name": "Angelo Abdoelsamath",
+      "email": "angelo.abdoelsamath@mollie.com"
     },
     {
-      "name": "Philipp Rappold",
-      "email": "philipp.rappold@mollie.com"
+      "name": "Damiano Trimboli",
+      "email": "damiano.trimboli@mollie.com"
     },
     {
       "name": "Vernon de Goede",

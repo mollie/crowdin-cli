@@ -5,6 +5,7 @@ import {
   createBranch,
   isCommonErrorResponse,
   unwrapValidationErrorResponse,
+  applyPreTranslations,
 } from "./lib/crowdin";
 import log from "./utils/logging";
 import chalk from "chalk";
@@ -20,16 +21,20 @@ export default async (options: UploadOptions) => {
   const file = fs.createReadStream(options.translationsFile);
 
   try {
-    const response = await createBranch(options.branchName);
+    const branchResponse = await createBranch(options.branchName);
 
-    if (isCommonErrorResponse(response)) {
-      log.error(response.error.message);
+    if (isCommonErrorResponse(branchResponse)) {
+      log.error(branchResponse.error.message);
     } else {
-      await createFile(response.data.name, file);
-      log.success(`Created branch ${chalk.bold(response.data.name)}`);
+      const fileResponse = await createFile(branchResponse.data.name, file);
+      log.success(`Created branch ${chalk.bold(branchResponse.data.name)}`);
       log.success(
-        `Uploaded source file to branch: ${chalk.bold(response.data.name)}`
+        `Uploaded source file (id: ${
+          fileResponse.data.id
+        }) to branch: ${chalk.bold(branchResponse.data.name)}`
       );
+      await applyPreTranslations(fileResponse.data.id);
+      log.success(`Successfully applied pre-translations`);
     }
   } catch (errorResponse) {
     const error = unwrapValidationErrorResponse(errorResponse);
@@ -51,7 +56,7 @@ export default async (options: UploadOptions) => {
       // Something else went wrong. Sometimes after a branch is
       // deleted in Crowdin, it takes a couple seconds until a new one
       // can be created. It’s probably that.
-      log.error(error.code);
+      log.error(error.code + ": " + error.message);
     }
   }
 };

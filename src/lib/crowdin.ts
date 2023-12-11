@@ -9,13 +9,20 @@ import CrowdinApiClient, {
   ValidationErrorResponse,
   TasksModel,
   Error,
+  TranslationsModel,
 } from "@crowdin/crowdin-api-client";
 import chalk from "chalk";
 import fs from "fs";
 import config from "../config";
 import { CrowdinResponse, ExportFileResponse } from "../types";
 
-const { CROWDIN_PERSONAL_ACCESS_TOKEN, CROWDIN_PROJECT_ID, FILE_NAME } = config;
+const {
+  CROWDIN_PERSONAL_ACCESS_TOKEN,
+  CROWDIN_PROJECT_ID,
+  FILE_NAME,
+  DEEPL_ENGINE_ID,
+  DEEPL_SUPPORTED_LANGUAGES,
+} = config;
 
 const credentials: Credentials = {
   token: CROWDIN_PERSONAL_ACCESS_TOKEN,
@@ -31,16 +38,18 @@ const {
 } = new CrowdinApiClient(credentials);
 
 export const unwrapValidationErrorResponse = (
-  response: ValidationErrorResponse
+  response: CommonErrorResponse | ValidationErrorResponse
 ): Error => {
-  return response?.errors[0]?.error?.errors[0];
+  return isCommonErrorResponse(response)
+    ? response?.error
+    : response?.errors[0]?.error?.errors[0];
 };
 
-export const isCommonErrorResponse = (
-  response: CrowdinResponse<any>
-): response is CommonErrorResponse => {
+export function isCommonErrorResponse(
+  response: CrowdinResponse<unknown> | ValidationErrorResponse
+): response is CommonErrorResponse {
   return (response as CommonErrorResponse).error !== undefined;
-};
+}
 
 const listBranches = (
   branchName: string
@@ -87,6 +96,15 @@ export const createFile = async (
     storageId: storage.data.id,
     name: FILE_NAME,
     branchId,
+  });
+};
+
+export const applyPreTranslations = async (fileId: number) => {
+  return translationsApi.applyPreTranslation(CROWDIN_PROJECT_ID, {
+    languageIds: DEEPL_SUPPORTED_LANGUAGES,
+    fileIds: [fileId],
+    method: TranslationsModel.Method.MT,
+    engineId: DEEPL_ENGINE_ID,
   });
 };
 

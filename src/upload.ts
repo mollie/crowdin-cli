@@ -51,16 +51,7 @@ export default async (options: UploadOptions) => {
       );
 
       try {
-        const fileResponse = await updateOrRestoreFile(
-          options.branchName,
-          file
-        );
-
-        if (!isCommonErrorResponse(fileResponse) && options.preTranslate) {
-          await applyPreTranslations(fileResponse.data.id);
-          log.success(`Successfully applied pre-translations`);
-        }
-
+        await updateOrRestoreFile(options.branchName, file);
         log.success("Source file updated");
       } catch (error) {
         log.error(error);

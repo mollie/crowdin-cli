@@ -97,11 +97,36 @@ export const createFile = async (
 };
 
 export const applyPreTranslations = async (fileId: number) => {
-  return translationsApi.applyPreTranslation(CROWDIN_PROJECT_ID, {
-    languageIds: DEEPL_SUPPORTED_LANGUAGES,
-    fileIds: [fileId],
-    method: TranslationsModel.Method.MT,
-    engineId: DEEPL_ENGINE_ID,
+  const preTranslation = await translationsApi.applyPreTranslation(
+    CROWDIN_PROJECT_ID,
+    {
+      languageIds: DEEPL_SUPPORTED_LANGUAGES,
+      fileIds: [fileId],
+      method: TranslationsModel.Method.MT,
+      engineId: DEEPL_ENGINE_ID,
+    }
+  );
+
+  return waitForPreTranslation(preTranslation.data.identifier);
+};
+
+const waitForPreTranslation = async (
+  preTranslationId: string
+): Promise<void> => {
+  const preTranslationStatus = await translationsApi.preTranslationStatus(
+    CROWDIN_PROJECT_ID,
+    preTranslationId
+  );
+
+  if (preTranslationStatus.data.status === "finished") {
+    return;
+  }
+
+  return new Promise(resolve => {
+    setTimeout(async () => {
+      await waitForPreTranslation(preTranslationId);
+      resolve();
+    }, 1000);
   });
 };
 

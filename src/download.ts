@@ -5,7 +5,7 @@ import {
   updateOrRestoreFile,
   exportFile,
   isCommonErrorResponse,
-  unwrapValidationErrorResponse,
+  unwrapErrorResponse,
 } from "./lib/crowdin";
 import log from "./utils/logging";
 import convertToKeyValue from "./utils/convert-to-key-value";
@@ -32,7 +32,10 @@ export default async (options: DownloadOptions) => {
 
   const file = fs.createReadStream(options.translationsFile);
   const fileExtension = options.typescript ? "ts" : "js";
-  const updateResponse = await updateOrRestoreFile(options.branchName, file);
+  const updateResponse = await updateOrRestoreFile({
+    branchName: options.branchName,
+    file,
+  });
 
   if (isCommonErrorResponse(updateResponse)) {
     log.error(
@@ -56,7 +59,7 @@ export default async (options: DownloadOptions) => {
       log.error(data.error.message);
     }
 
-    if (unwrapValidationErrorResponse(data)?.code === "notInArray") {
+    if (unwrapErrorResponse(data)?.code === "notInArray") {
       log.error(
         "Target language not found. Make sure `CROWDIN_LANGUAGES` is correct."
       );

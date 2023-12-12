@@ -30,7 +30,7 @@ const {
   token: CROWDIN_PERSONAL_ACCESS_TOKEN,
 });
 
-export const unwrapValidationErrorResponse = (
+export const unwrapErrorResponse = (
   response: CommonErrorResponse | ValidationErrorResponse
 ): Error => {
   return isCommonErrorResponse(response)
@@ -138,10 +138,15 @@ const waitForPreTranslation = async (
   });
 };
 
-export const updateOrRestoreFile = async (
-  branchName: string,
-  file: fs.ReadStream
-): Promise<ResponseObject<SourceFilesModel.File> | CommonErrorResponse> => {
+export const updateOrRestoreFile = async ({
+  branchName,
+  file,
+  clearTranslationsAndApprovals = false,
+}: {
+  branchName: string;
+  file: fs.ReadStream;
+  clearTranslationsAndApprovals?: boolean;
+}): Promise<ResponseObject<SourceFilesModel.File> | CommonErrorResponse> => {
   const storage = await addStorage(file);
   const branches = await listBranches(branchName);
   const branchId = branches?.data[0]?.data?.id;
@@ -162,7 +167,9 @@ export const updateOrRestoreFile = async (
 
   return sourceFilesApi.updateOrRestoreFile(CROWDIN_PROJECT_ID, fileId, {
     storageId: storage.data.id,
-    updateOption: SourceFilesModel.UpdateOption.KEEP_TRANSLATIONS,
+    updateOption: clearTranslationsAndApprovals
+      ? SourceFilesModel.UpdateOption.CLEAR_TRANSLATIONS_AND_APPROVALS
+      : SourceFilesModel.UpdateOption.KEEP_TRANSLATIONS,
   });
 };
 

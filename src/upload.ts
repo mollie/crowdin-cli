@@ -13,7 +13,7 @@ import chalk from "chalk";
 interface UploadOptions {
   translationsFile: string;
   branchName: string;
-  preTranslate: boolean;
+  preTranslate?: boolean;
 }
 
 export default async (options: UploadOptions) => {

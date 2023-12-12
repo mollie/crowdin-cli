@@ -4,16 +4,29 @@ import {
   updateOrRestoreFile,
   createBranch,
   isCommonErrorResponse,
-  unwrapValidationErrorResponse,
+  unwrapErrorResponse,
   applyPreTranslations,
 } from "./lib/crowdin";
 import log from "./utils/logging";
 import chalk from "chalk";
+import {
+  CommonErrorResponse,
+  ValidationErrorResponse,
+} from "@crowdin/crowdin-api-client";
 
 interface UploadOptions {
   translationsFile: string;
   branchName: string;
   preTranslate?: boolean;
+}
+
+async function preTranslate(fileId: number) {
+  try {
+    await applyPreTranslations(fileId);
+    log.success(`Successfully applied pre-translations`);
+  } catch (error) {
+    typeof error === "string" ? log.error(error) : console.log(error);
+  }
 }
 
 export default async (options: UploadOptions) => {
@@ -36,16 +49,13 @@ export default async (options: UploadOptions) => {
       );
 
       if (options.preTranslate) {
-        try {
-          await applyPreTranslations(fileResponse.data.id);
-          log.success(`Successfully applied pre-translations`);
-        } catch (error) {
-          log.error(error);
-        }
+        await preTranslate(fileResponse.data.id);
       }
     }
   } catch (errorResponse) {
-    const error = unwrapValidationErrorResponse(errorResponse);
+    const error = unwrapErrorResponse(
+      errorResponse as CommonErrorResponse | ValidationErrorResponse
+    );
 
     if (error.code === "notUnique") {
       // Branch already exists. Update the file.
@@ -55,10 +65,19 @@ export default async (options: UploadOptions) => {
       );
 
       try {
-        await updateOrRestoreFile(options.branchName, file);
+        const fileResponse = await updateOrRestoreFile({
+          branchName: options.branchName,
+          clearTranslationsAndApprovals: options.preTranslate,
+          file,
+        });
+
         log.success("Source file updated");
+
+        if (options.preTranslate && !isCommonErrorResponse(fileResponse)) {
+          await preTranslate(fileResponse.data.id);
+        }
       } catch (error) {
-        log.error(error);
+        typeof error === "string" ? log.error(error) : console.log(error);
       }
     } else {
       // Something else went wrong. Sometimes after a branch is

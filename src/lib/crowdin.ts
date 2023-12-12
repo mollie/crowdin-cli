@@ -93,6 +93,18 @@ export const createFile = async (
 };
 
 export const applyPreTranslations = async (fileId: number) => {
+  if (!DEEPL_ENGINE_ID) {
+    throw new Error(
+      "To apply pre-translations, please set the CROWDIN_DEEPL_ENGINE_ID variable in your .env file."
+    );
+  }
+
+  if (DEEPL_SUPPORTED_LANGUAGES.length === 0) {
+    throw new Error(
+      "To apply pre-translations, please set the CROWDIN_DEEPL_SUPPORTED_LANGUAGES variable in your .env file."
+    );
+  }
+
   const preTranslation = await translationsApi.applyPreTranslation(
     CROWDIN_PROJECT_ID,
     {

@@ -17,6 +17,7 @@ export interface Config {
   CROWDIN_PERSONAL_ACCESS_TOKEN: string;
   CROWDIN_PROJECT_ID: number;
   CROWDIN_LANGUAGES: string[];
+  CROWDIN_PRE_TRANSLATED_LANGUAGES: string[];
   INTL_DIR: string;
   TRANSLATIONS_DIR: string;
   TRANSLATIONS_FILE: string;

@@ -1,9 +1,10 @@
-import { Command, Option } from "commander";
+import { Command, Option, InvalidOptionArgumentError } from "commander";
 import upload from "./upload";
 import download from "./download";
 import collect from "./collect";
 import deleteBranch from "./delete-branch";
 import config from "./config";
+import createTasks, { TaskType } from "./create-tasks";
 
 class BranchNameOption extends Option {
   constructor(description: string) {
@@ -12,13 +13,25 @@ class BranchNameOption extends Option {
   }
 }
 
+const parseIntArgument = (value: string) => {
+  const parsedValue = parseInt(value, 10);
+
+  if (isNaN(parsedValue)) {
+    throw new InvalidOptionArgumentError("Not a number.");
+  }
+
+  return parsedValue;
+};
+
 const main = async (argv: string[]) => {
   const program = new Command();
   const version = require("../package.json").version;
 
   program
     .name("mollie-crowdin")
-    .usage("<upload | collect | download | delete-branch> [options]")
+    .usage(
+      "<upload | collect | download | delete-branch | pre-translate> [options]"
+    )
     .version(version);
 
   program
@@ -36,6 +49,37 @@ const main = async (argv: string[]) => {
         branchName: options.branchName,
       });
     });
+
+  program
+    .command("create-tasks")
+    .description(
+      "create tasks for reviewing the pre-translations of this branch"
+    )
+    .addOption(
+      new BranchNameOption(
+        "the Crowdin branch for which to create tasks"
+      ).makeOptionMandatory(true)
+    )
+    .addOption(
+      new Option(
+        "-f, --file-id <number>",
+        "file ID for which to create the tasks"
+      ).makeOptionMandatory(true)
+    )
+    .addOption(
+      new Option("-t, --type <type>", "type of tasks to create")
+        .choices(["proofread", "translate"])
+        .default("proofread")
+    )
+    .action(
+      (options: { branchName: string; fileId: string; type: TaskType }) => {
+        createTasks({
+          ...options,
+          fileId: parseIntArgument(options.fileId),
+          languages: config.CROWDIN_PRE_TRANSLATED_LANGUAGES,
+        });
+      }
+    );
 
   program
     .command("collect <glob>")

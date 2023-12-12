@@ -7,6 +7,7 @@ import CrowdinApiClient, {
   ResponseList,
   ResponseObject,
   ValidationErrorResponse,
+  TasksModel,
   Error,
 } from "@crowdin/crowdin-api-client";
 import chalk from "chalk";
@@ -20,10 +21,13 @@ const credentials: Credentials = {
   token: CROWDIN_PERSONAL_ACCESS_TOKEN,
 };
 
+export const CrowdinType = TasksModel.Type;
+
 const {
   translationsApi,
   sourceFilesApi,
   uploadStorageApi,
+  tasksApi,
 } = new CrowdinApiClient(credentials);
 
 export const unwrapValidationErrorResponse = (
@@ -131,4 +135,27 @@ export const exportFile = async (
   );
 
   return axios.get(translation.data.url);
+};
+
+export const listTasks = (): Promise<ResponseList<TasksModel.Task>> => {
+  return tasksApi.listTasks(CROWDIN_PROJECT_ID, {
+    limit: 500,
+    status: TasksModel.Status.TODO,
+  });
+};
+
+export const createTask = async (
+  title: string,
+  fileIds: number[],
+  languageId: string,
+  type: TasksModel.Type,
+  description?: string
+): Promise<ResponseObject<TasksModel.Task>> => {
+  return tasksApi.addTask(CROWDIN_PROJECT_ID, {
+    title,
+    fileIds,
+    languageId,
+    type,
+    description,
+  });
 };

@@ -29,6 +29,9 @@ const preTranslatedLanguages: string[] = process.env
   .CROWDIN_PRE_TRANSLATED_LANGUAGES
   ? (process.env.CROWDIN_PRE_TRANSLATED_LANGUAGES.split(",") as string[])
   : projectLanguages;
+const deeplSupportedLanguages = process.env.CROWDIN_DEEPL_SUPPORTED_LANGUAGES
+  ? process.env.CROWDIN_DEEPL_SUPPORTED_LANGUAGES.split(",")
+  : [];
 
 const config: Config = {
   BRANCH_NAME: branch,
@@ -41,16 +44,10 @@ const config: Config = {
   INTL_DIR,
   TRANSLATIONS_DIR: `${WORKING_DIR}/src/intl`,
   TRANSLATIONS_FILE: `${INTL_DIR}/english.source.json`,
-  DEEPL_ENGINE_ID: 418490,
-  DEEPL_SUPPORTED_LANGUAGES: [
-    "nl",
-    "en-GB",
-    "en-US",
-    "de",
-    "es-ES",
-    "fr",
-    "it",
-  ],
+  DEEPL_ENGINE_ID: process.env.CROWDIN_DEEPL_ENGINE_ID
+    ? Number(process.env.CROWDIN_DEEPL_ENGINE_ID)
+    : undefined,
+  DEEPL_SUPPORTED_LANGUAGES: deeplSupportedLanguages,
 };
 
 export default config;

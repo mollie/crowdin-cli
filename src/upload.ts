@@ -36,8 +36,12 @@ export default async (options: UploadOptions) => {
       );
 
       if (options.preTranslate) {
-        await applyPreTranslations(fileResponse.data.id);
-        log.success(`Successfully applied pre-translations`);
+        try {
+          await applyPreTranslations(fileResponse.data.id);
+          log.success(`Successfully applied pre-translations`);
+        } catch (error) {
+          log.error(error);
+        }
       }
     }
   } catch (errorResponse) {

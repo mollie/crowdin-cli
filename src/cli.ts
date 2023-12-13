@@ -27,9 +27,7 @@ const main = async (argv: string[]) => {
 
   program
     .name("mollie-crowdin")
-    .usage(
-      "<upload | collect | download | delete-branch | create-tasks> [options]"
-    )
+    .usage("<upload | collect | download | delete-branch> [options]")
     .version(version);
 
   program

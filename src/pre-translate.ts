@@ -1,24 +1,11 @@
-import {
-  isCommonErrorResponse,
-  unwrapValidationErrorResponse,
-  applyPreTranslations,
-} from "./lib/crowdin";
+import { applyPreTranslations } from "./lib/crowdin";
 import log from "./utils/logging";
 
-export default async (fileId: number) => {
-  log.info("Pre-translating branch translations");
-
+export default async function preTranslate(fileId: number) {
   try {
-    const response = await applyPreTranslations(fileId);
-
-    if (isCommonErrorResponse(response)) {
-      log.error(response.error.message);
-    } else {
-      log.success(`Successfully applied pre-translations`);
-    }
-  } catch (errorResponse) {
-    const error = unwrapValidationErrorResponse(errorResponse);
-
-    log.error(error.code + ": " + error.message);
+    await applyPreTranslations(fileId);
+    log.success(`Successfully applied pre-translations`);
+  } catch (error) {
+    typeof error === "string" ? log.error(error) : console.log(error);
   }
-};
+}

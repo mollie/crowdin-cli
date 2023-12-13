@@ -5,7 +5,6 @@ import {
   createBranch,
   isCommonErrorResponse,
   unwrapErrorResponse,
-  applyPreTranslations,
 } from "./lib/crowdin";
 import log from "./utils/logging";
 import chalk from "chalk";
@@ -17,19 +16,15 @@ import {
 interface UploadOptions {
   translationsFile: string;
   branchName: string;
-  preTranslate?: boolean;
+  clearOnUpdate?: boolean;
 }
 
-async function preTranslate(fileId: number) {
-  try {
-    await applyPreTranslations(fileId);
-    log.success(`Successfully applied pre-translations`);
-  } catch (error) {
-    typeof error === "string" ? log.error(error) : console.log(error);
-  }
-}
-
-export default async (options: UploadOptions) => {
+export default async (
+  options: UploadOptions
+): Promise<{
+  fileId: number;
+  action: "create" | "update";
+} | void> => {
   log.info("Uploading source file to Crowdin");
 
   const file = fs.createReadStream(options.translationsFile);
@@ -48,9 +43,10 @@ export default async (options: UploadOptions) => {
         }) to branch: ${chalk.bold(branchResponse.data.name)}`
       );
 
-      if (options.preTranslate) {
-        await preTranslate(fileResponse.data.id);
-      }
+      return {
+        fileId: fileResponse.data.id,
+        action: "create",
+      };
     }
   } catch (errorResponse) {
     const error = unwrapErrorResponse(
@@ -67,15 +63,24 @@ export default async (options: UploadOptions) => {
       try {
         const fileResponse = await updateOrRestoreFile({
           branchName: options.branchName,
-          clearTranslationsAndApprovals: options.preTranslate,
+          clearTranslationsAndApprovals: options.clearOnUpdate,
           file,
         });
 
+        if (isCommonErrorResponse(fileResponse)) {
+          log.error(
+            `${fileResponse.error.code}: ${fileResponse.error.message}`
+          );
+
+          return;
+        }
+
         log.success("Source file updated");
 
-        if (options.preTranslate && !isCommonErrorResponse(fileResponse)) {
-          await preTranslate(fileResponse.data.id);
-        }
+        return {
+          fileId: fileResponse.data.id,
+          action: "update",
+        };
       } catch (error) {
         typeof error === "string" ? log.error(error) : console.log(error);
       }

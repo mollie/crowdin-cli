@@ -3,7 +3,7 @@ import {
   createTask,
   isCommonErrorResponse,
   listTasks,
-  unwrapValidationErrorResponse,
+  unwrapErrorResponse,
 } from "./lib/crowdin";
 import log from "./utils/logging";
 
@@ -58,7 +58,7 @@ export default async (options: CreateTasksOptions) => {
 
       log.info(`Successfully created task for language ${language}`);
     } catch (errorResponse) {
-      const error = unwrapValidationErrorResponse(errorResponse);
+      const error = unwrapErrorResponse(errorResponse);
 
       log.error(error.message);
     }

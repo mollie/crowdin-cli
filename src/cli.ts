@@ -5,6 +5,7 @@ import collect from "./collect";
 import deleteBranch from "./delete-branch";
 import config from "./config";
 import createTasks, { TaskType } from "./create-tasks";
+import preTranslate from "./pre-translate";
 
 class BranchNameOption extends Option {
   constructor(description: string) {
@@ -50,6 +51,11 @@ const main = async (argv: string[]) => {
       )
     )
     .addOption(
+      new Option("-t, --task-type <task-type>", "type of tasks to create")
+        .choices(["proofread", "translate"])
+        .default("proofread")
+    )
+    .addOption(
       new PreTranslateOption(
         "whether to generate pre-translations for the uploaded files"
       )
@@ -57,14 +63,37 @@ const main = async (argv: string[]) => {
     .action(
       async (
         glob: string,
-        options: { branchName: string; preTranslate: boolean }
+        options: {
+          branchName: string;
+          preTranslate: boolean;
+          createTasks: boolean;
+          taskType: TaskType;
+        }
       ) => {
         await collect(glob);
-        await upload({
+
+        const result = await upload({
           translationsFile: config.TRANSLATIONS_FILE,
           branchName: options.branchName,
-          preTranslate: options.preTranslate,
+          clearOnUpdate: options.preTranslate,
         });
+
+        if (!result || !result.fileId) {
+          return;
+        }
+
+        if (options.preTranslate) {
+          await preTranslate(result.fileId);
+        }
+
+        if (options.createTasks && result.action === "create") {
+          await createTasks({
+            branchName: options.branchName,
+            fileId: result.fileId,
+            languages: config.CROWDIN_PRE_TRANSLATED_LANGUAGES,
+            type: options.taskType,
+          });
+        }
       }
     );
 
@@ -83,11 +112,6 @@ const main = async (argv: string[]) => {
         "-f, --file-id <number>",
         "file ID for which to create the tasks"
       ).makeOptionMandatory(true)
-    )
-    .addOption(
-      new Option("-t, --type <type>", "type of tasks to create")
-        .choices(["proofread", "translate"])
-        .default("proofread")
     )
     .action(
       (options: { branchName: string; fileId: string; type: TaskType }) => {

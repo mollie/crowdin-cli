@@ -1,4 +1,8 @@
 import {
+  CommonErrorResponse,
+  ValidationErrorResponse,
+} from "@crowdin/crowdin-api-client";
+import {
   CrowdinType,
   createTask,
   isCommonErrorResponse,
@@ -58,7 +62,9 @@ export default async (options: CreateTasksOptions) => {
 
       log.info(`Successfully created task for language ${language}`);
     } catch (errorResponse) {
-      const error = unwrapErrorResponse(errorResponse);
+      const error = unwrapErrorResponse(
+        errorResponse as CommonErrorResponse | ValidationErrorResponse
+      );
 
       log.error(error.message);
     }

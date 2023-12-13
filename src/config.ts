@@ -25,10 +25,6 @@ const INTL_DIR = `${WORKING_DIR}/intl`;
 const projectLanguages: string[] = process.env.CROWDIN_LANGUAGES.split(
   ","
 ) as string[];
-const preTranslatedLanguages: string[] = process.env
-  .CROWDIN_PRE_TRANSLATED_LANGUAGES
-  ? (process.env.CROWDIN_PRE_TRANSLATED_LANGUAGES.split(",") as string[])
-  : projectLanguages;
 const deeplSupportedLanguages = process.env.CROWDIN_DEEPL_SUPPORTED_LANGUAGES
   ? process.env.CROWDIN_DEEPL_SUPPORTED_LANGUAGES.split(",")
   : [];
@@ -40,7 +36,6 @@ const config: Config = {
     process.env.CROWDIN_PERSONAL_ACCESS_TOKEN || "",
   CROWDIN_PROJECT_ID: Number(process.env.CROWDIN_PROJECT_ID),
   CROWDIN_LANGUAGES: projectLanguages,
-  CROWDIN_PRE_TRANSLATED_LANGUAGES: preTranslatedLanguages,
   INTL_DIR,
   TRANSLATIONS_DIR: `${WORKING_DIR}/src/intl`,
   TRANSLATIONS_FILE: `${INTL_DIR}/english.source.json`,

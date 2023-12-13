@@ -1,4 +1,4 @@
-import { Command, Option, InvalidOptionArgumentError } from "commander";
+import { Command, Option } from "commander";
 import upload from "./upload";
 import download from "./download";
 import collect from "./collect";
@@ -14,19 +14,9 @@ class BranchNameOption extends Option {
   }
 }
 
-const parseIntArgument = (value: string) => {
-  const parsedValue = parseInt(value, 10);
-
-  if (isNaN(parsedValue)) {
-    throw new InvalidOptionArgumentError("Not a number.");
-  }
-
-  return parsedValue;
-};
-
 class PreTranslateOption extends Option {
   constructor(description: string) {
-    super("-b, --pre-translate", description);
+    super("-p, --pre-translate", description);
     this.default(false);
   }
 }
@@ -38,7 +28,7 @@ const main = async (argv: string[]) => {
   program
     .name("mollie-crowdin")
     .usage(
-      "<upload | collect | download | delete-branch | pre-translate> [options]"
+      "<upload | collect | download | delete-branch | create-tasks> [options]"
     )
     .version(version);
 
@@ -50,11 +40,7 @@ const main = async (argv: string[]) => {
         "the Crowdin branch where to sync the translations to"
       )
     )
-    .addOption(
-      new Option("-t, --task-type <task-type>", "type of tasks to create")
-        .choices(["proofread", "translate"])
-        .default("proofread")
-    )
+    .addOption(new Option("-t, --create-tasks", "type of tasks to create"))
     .addOption(
       new PreTranslateOption(
         "whether to generate pre-translations for the uploaded files"
@@ -67,7 +53,7 @@ const main = async (argv: string[]) => {
           branchName: string;
           preTranslate: boolean;
           createTasks: boolean;
-          taskType: TaskType;
+          type: TaskType;
         }
       ) => {
         await collect(glob);
@@ -86,40 +72,20 @@ const main = async (argv: string[]) => {
           await preTranslate(result.fileId);
         }
 
+        /**
+         * @todo handle "update" action?
+         */
         if (options.createTasks && result.action === "create") {
           await createTasks({
             branchName: options.branchName,
             fileId: result.fileId,
-            languages: config.CROWDIN_PRE_TRANSLATED_LANGUAGES,
-            type: options.taskType,
+            /**
+             * This should probably be config.CROWDIN_LANGUAGES
+             */
+            languages: config.DEEPL_SUPPORTED_LANGUAGES,
+            type: TaskType.PROOFREAD,
           });
         }
-      }
-    );
-
-  program
-    .command("create-tasks")
-    .description(
-      "create tasks for reviewing the pre-translations of this branch"
-    )
-    .addOption(
-      new BranchNameOption(
-        "the Crowdin branch for which to create tasks"
-      ).makeOptionMandatory(true)
-    )
-    .addOption(
-      new Option(
-        "-f, --file-id <number>",
-        "file ID for which to create the tasks"
-      ).makeOptionMandatory(true)
-    )
-    .action(
-      (options: { branchName: string; fileId: string; type: TaskType }) => {
-        createTasks({
-          ...options,
-          fileId: parseIntArgument(options.fileId),
-          languages: config.CROWDIN_PRE_TRANSLATED_LANGUAGES,
-        });
       }
     );
 

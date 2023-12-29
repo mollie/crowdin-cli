@@ -4,7 +4,7 @@ import download from "./download";
 import collect from "./collect";
 import deleteBranch from "./delete-branch";
 import config from "./config";
-import createTasks, { TaskType } from "./create-tasks";
+import createTasks, { CreateTasksOptions } from "./create-tasks";
 import preTranslate from "./pre-translate";
 
 class BranchNameOption extends Option {
@@ -47,11 +47,9 @@ const main = async (argv: string[]) => {
     .action(
       async (
         glob: string,
-        options: {
-          branchName: string;
+        options: Pick<CreateTasksOptions, "branchName" | "type"> & {
           preTranslate: boolean;
           createTasks: boolean;
-          type: TaskType;
         }
       ) => {
         await collect(glob);
@@ -70,18 +68,12 @@ const main = async (argv: string[]) => {
           await preTranslate(result.fileId);
         }
 
-        /**
-         * @todo handle "update" action?
-         */
-        if (options.createTasks && result.action === "create") {
+        if (options.createTasks) {
           await createTasks({
             branchName: options.branchName,
             fileId: result.fileId,
-            /**
-             * This should probably be config.CROWDIN_LANGUAGES
-             */
-            languages: config.DEEPL_SUPPORTED_LANGUAGES,
-            type: TaskType.PROOFREAD,
+            languages: config.CROWDIN_LANGUAGES,
+            type: "proofread",
           });
         }
       }

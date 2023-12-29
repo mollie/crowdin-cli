@@ -5,22 +5,18 @@ import {
 import {
   CrowdinType,
   createTask,
+  deleteTask,
   isCommonErrorResponse,
   listTasks,
   unwrapErrorResponse,
 } from "./lib/crowdin";
 import log from "./utils/logging";
 
-export enum TaskType {
-  PROOFREAD = "proofread",
-  TRANSLATE = "translate",
-}
-
 export interface CreateTasksOptions {
   branchName: string;
   fileId: number;
   languages: string[];
-  type: TaskType;
+  type: "proofread" | "translate";
 }
 
 const generateDescription = (branchName: string, language: string) =>
@@ -30,7 +26,6 @@ export default async (options: CreateTasksOptions) => {
   log.info("Creating tasks...");
 
   const tasks = await listTasks();
-
   const descriptions = tasks.data.map(({ data: task }) => task.description);
 
   for await (const language of options.languages) {
@@ -38,9 +33,13 @@ export default async (options: CreateTasksOptions) => {
     const description = generateDescription(options.branchName, language);
 
     if (descriptions.includes(description)) {
-      log.info(`Task for ${language} already exists`);
+      const task = tasks.data.find(
+        ({ data }) => data.description === description
+      );
 
-      continue;
+      if (task?.data.id) {
+        await deleteTask(task.data.id);
+      }
     }
 
     try {
@@ -50,7 +49,7 @@ export default async (options: CreateTasksOptions) => {
         title,
         [options.fileId],
         language,
-        options.type === TaskType.PROOFREAD
+        options.type === "proofread"
           ? CrowdinType.PROOFREAD
           : CrowdinType.TRANSLATE,
         description
@@ -66,7 +65,7 @@ export default async (options: CreateTasksOptions) => {
         errorResponse as CommonErrorResponse | ValidationErrorResponse
       );
 
-      log.error(error.message);
+      log.error(error?.message);
     }
   }
 };

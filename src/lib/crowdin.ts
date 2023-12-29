@@ -39,7 +39,7 @@ export const unwrapErrorResponse = (
 ): Error => {
   return isCommonErrorResponse(response)
     ? response?.error
-    : response?.errors[0]?.error?.errors[0];
+    : response?.errors?.[0]?.error?.errors[0];
 };
 
 export function isCommonErrorResponse(
@@ -217,4 +217,8 @@ export const createTask = async (
     type,
     description,
   });
+};
+
+export const deleteTask = async (taskId: number) => {
+  return tasksApi.deleteTask(CROWDIN_PROJECT_ID, taskId);
 };

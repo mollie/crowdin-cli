@@ -23,7 +23,6 @@ export default async (
   options: UploadOptions
 ): Promise<{
   fileId: number;
-  action: "create" | "update";
 } | void> => {
   log.info("Uploading source file to Crowdin");
 
@@ -45,7 +44,6 @@ export default async (
 
       return {
         fileId: fileResponse.data.id,
-        action: "create",
       };
     }
   } catch (errorResponse) {
@@ -79,7 +77,6 @@ export default async (
 
         return {
           fileId: fileResponse.data.id,
-          action: "update",
         };
       } catch (error) {
         typeof error === "string" ? log.error(error) : console.log(error);

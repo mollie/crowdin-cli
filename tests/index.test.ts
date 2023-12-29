@@ -7,6 +7,8 @@ import collect from "../src/collect";
 import download from "../src/download";
 import upload from "../src/upload";
 import deleteBranch from "../src/delete-branch";
+import preTranslate from "../src/pre-translate";
+import createTasks from "../src/create-tasks";
 import { sync } from "mkdirp";
 
 jest.mock("@crowdin/crowdin-api-client", () => ({
@@ -21,6 +23,12 @@ jest.mock("@crowdin/crowdin-api-client", () => ({
     translationsApi: {
       exportProjectTranslation: jest.fn().mockResolvedValue({
         data: { url: "https://example.com/mock.json" },
+      }),
+      applyPreTranslation: jest.fn().mockResolvedValue({
+        data: { id: 234234 },
+      }),
+      preTranslationStatus: jest.fn().mockResolvedValue({
+        data: { status: "finished" },
       }),
     },
     sourceFilesApi: {
@@ -37,6 +45,23 @@ jest.mock("@crowdin/crowdin-api-client", () => ({
         data: { id: 234234, name: "mock-branch-name" },
       }),
       createFile: jest.fn().mockResolvedValue({
+        data: { id: 234234 },
+      }),
+      deleteBranch: jest.fn(),
+    },
+    tasksApi: {
+      listTasks: jest.fn().mockResolvedValue({
+        data: [
+          {
+            data: {
+              id: 234234,
+              description: "DO NOT CHANGE: mock-branch-name (nl)",
+            },
+          },
+        ],
+      }),
+      deleteTask: jest.fn(),
+      createTask: jest.fn().mockResolvedValue({
         data: { id: 234234 },
       }),
     },
@@ -93,6 +118,20 @@ jest.mock("../src/delete-branch", () => {
   };
 });
 
+jest.mock("../src/pre-translate", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(jest.requireActual("../src/pre-translate").default),
+  };
+});
+
+jest.mock("../src/create-tasks", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(jest.requireActual("../src/create-tasks").default),
+  };
+});
+
 const mockGlob = "tests/fixtures/**/*.ts*";
 
 describe("CLI", () => {
@@ -115,6 +154,7 @@ describe("CLI", () => {
         branchName: "test-branch",
       })
     );
+
     await program([
       "node",
       "test",
@@ -131,6 +171,21 @@ describe("CLI", () => {
     );
     expect(collect).toHaveBeenCalledTimes(2);
     expect(upload).toHaveBeenCalledTimes(2);
+
+    expect(preTranslate).not.toHaveBeenCalled();
+    expect(createTasks).not.toHaveBeenCalled();
+    await program([
+      "node",
+      "test",
+      "upload",
+      mockGlob,
+      "--pre-translate",
+      "--create-tasks",
+    ]);
+    expect(collect).toHaveBeenCalledTimes(3);
+    expect(upload).toHaveBeenCalledTimes(3);
+    expect(preTranslate).toHaveBeenCalledTimes(1);
+    expect(createTasks).toHaveBeenCalledTimes(1);
   });
 
   it("correctly handles `download` command", async () => {

@@ -12,6 +12,6 @@ export default async (options: DeleteBranchOptions) => {
     await deleteBranch(options.branchName);
     log.success("Branch deleted");
   } catch (error) {
-    typeof error === "string" ? log.error(error) : console.log(error);
+    log.error(error as string);
   }
 };

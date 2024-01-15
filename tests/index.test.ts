@@ -174,6 +174,9 @@ describe("CLI", () => {
 
     expect(preTranslate).not.toHaveBeenCalled();
     expect(createTasks).not.toHaveBeenCalled();
+  });
+
+  it("correctly handles `upload` command with pre-translate and create-tasks options", async () => {
     await program([
       "node",
       "test",
@@ -182,10 +185,16 @@ describe("CLI", () => {
       "--pre-translate",
       "--create-tasks",
     ]);
-    expect(collect).toHaveBeenCalledTimes(3);
-    expect(upload).toHaveBeenCalledTimes(3);
+    expect(collect).toHaveBeenCalledTimes(1);
+    expect(upload).toHaveBeenCalledTimes(1);
     expect(preTranslate).toHaveBeenCalledTimes(1);
     expect(createTasks).toHaveBeenCalledTimes(1);
+  });
+
+  it("correctly handles `collect` command", async () => {
+    await program(["node", "test", "collect", mockGlob]);
+    expect(collect).toHaveBeenCalledTimes(1);
+    expect(collect).toHaveBeenCalledWith(mockGlob);
   });
 
   it("correctly handles `download` command", async () => {

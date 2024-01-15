@@ -6,6 +6,6 @@ export default async function preTranslate(fileId: number) {
     await applyPreTranslations(fileId);
     log.success(`Successfully applied pre-translations`);
   } catch (error) {
-    typeof error === "string" ? log.error(error) : console.log(error);
+    log.error(error as string);
   }
 }

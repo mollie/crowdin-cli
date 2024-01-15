@@ -79,7 +79,7 @@ export default async (
           fileId: fileResponse.data.id,
         };
       } catch (error) {
-        typeof error === "string" ? log.error(error) : console.log(error);
+        log.error(error as string);
       }
     } else {
       // Something else went wrong. Sometimes after a branch is

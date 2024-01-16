@@ -7,6 +7,7 @@ import {
   createTask,
   deleteTask,
   isCommonErrorResponse,
+  listBranches,
   listTasks,
   unwrapErrorResponse,
 } from "./lib/crowdin";
@@ -19,28 +20,22 @@ export interface CreateTasksOptions {
   type: "proofread" | "translate";
 }
 
-const generateDescription = (branchName: string, language: string) =>
-  `DO NOT CHANGE: ${branchName} (${language})`;
-
 export default async (options: CreateTasksOptions) => {
   log.info("Creating tasks...");
 
-  const tasks = await listTasks();
-  const descriptions = tasks.data.map(({ data: task }) => task.description);
+  const branches = await listBranches(options.branchName);
+  const branchId = branches.data[0].data.id;
+  const tasks = await listTasks({ branchId });
+
+  await Promise.allSettled(
+    tasks.data
+      .filter(task => task.data.fileIds.includes(options.fileId))
+      .map(task => deleteTask(task.data.id))
+  );
 
   for await (const language of options.languages) {
     const title = `Review translations for ${options.branchName}`;
-    const description = generateDescription(options.branchName, language);
-
-    if (descriptions.includes(description)) {
-      const task = tasks.data.find(
-        ({ data }) => data.description === description
-      );
-
-      if (task?.data.id) {
-        await deleteTask(task.data.id);
-      }
-    }
+    const description = `${options.branchName} (${language})`;
 
     try {
       log.info(`Creating task for language ${language}: ${title}`);

@@ -54,7 +54,7 @@ export const listBranches = (
   return sourceFilesApi.listProjectBranches(CROWDIN_PROJECT_ID, branchName);
 };
 
-const listFiles = (
+export const listFiles = (
   branchId: number
 ): Promise<ResponseList<SourceFilesModel.File>> => {
   return sourceFilesApi.listProjectFiles(CROWDIN_PROJECT_ID, branchId);
@@ -74,10 +74,7 @@ export const createBranch = (
   });
 };
 
-export const deleteBranch = async (branchName: string): Promise<void> => {
-  const branches = await listBranches(branchName);
-  const branchId = branches.data[0].data.id;
-
+export const deleteBranch = async (branchId: number): Promise<void> => {
   return sourceFilesApi.deleteBranch(CROWDIN_PROJECT_ID, branchId);
 };
 

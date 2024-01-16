@@ -2,7 +2,7 @@ import { Command, Option } from "commander";
 import upload from "./upload";
 import download from "./download";
 import collect from "./collect";
-import deleteBranch from "./delete-branch";
+import deleteBranch, { DeleteBranchOptions } from "./delete-branch";
 import config from "./config";
 import createTasks, { CreateTasksOptions } from "./create-tasks";
 import preTranslate from "./pre-translate";
@@ -17,6 +17,13 @@ class BranchNameOption extends Option {
 class PreTranslateOption extends Option {
   constructor(description: string) {
     super("-p, --pre-translate", description);
+    this.default(false);
+  }
+}
+
+class DeleteTasksOption extends Option {
+  constructor(description: string) {
+    super("-p, --delete-tasks", description);
     this.default(false);
   }
 }
@@ -111,10 +118,9 @@ const main = async (argv: string[]) => {
     .command("delete-branch")
     .description("clean up branches in Crowdin")
     .addOption(new BranchNameOption("the Crowdin branch to be deleted"))
-    .action(async (options: { branchName: string }) => {
-      await deleteBranch({
-        branchName: options.branchName,
-      });
+    .addOption(new DeleteTasksOption("whether to delete any associated tasks"))
+    .action(async (options: DeleteBranchOptions) => {
+      await deleteBranch(options);
     });
 
   await program.parseAsync(argv);

@@ -151,7 +151,7 @@ describe("CLI", () => {
     expect(upload).toHaveBeenCalledWith(
       expect.objectContaining({
         translationsFile: config.TRANSLATIONS_FILE,
-        branchName: "test-branch",
+        branchName: "mock-branch-name",
       })
     );
 
@@ -220,12 +220,29 @@ describe("CLI", () => {
   });
 
   it("correctly handles `delete-branch` command", async () => {
+    const { tasksApi } = new CrowdinApiClient({
+      token: config.CROWDIN_PERSONAL_ACCESS_TOKEN,
+    });
+
     await program(["node", "test", "delete-branch"]);
     expect(deleteBranch).toHaveBeenCalledWith(
       expect.objectContaining({
         branchName: config.BRANCH_NAME,
       })
     );
+    expect(tasksApi.listTasks).not.toHaveBeenCalled();
+    expect(tasksApi.deleteTask).not.toHaveBeenCalled();
+
+    await program(["node", "test", "delete-branch", "--delete-tasks"]);
+    expect(deleteBranch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        branchName: config.BRANCH_NAME,
+        deleteTasks: true,
+      })
+    );
+    expect(tasksApi.listTasks).toHaveBeenCalled();
+    expect(tasksApi.deleteTask).toHaveBeenCalled();
+
     await program([
       "node",
       "test",
@@ -238,7 +255,7 @@ describe("CLI", () => {
         branchName: "custom-branch-name",
       })
     );
-    expect(deleteBranch).toHaveBeenCalledTimes(2);
+    expect(deleteBranch).toHaveBeenCalledTimes(3);
   });
 });
 

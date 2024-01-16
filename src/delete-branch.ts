@@ -1,25 +1,39 @@
-import { deleteBranch, deleteTask, listTasks } from "./lib/crowdin";
+import {
+  deleteBranch,
+  deleteTask,
+  listBranches,
+  listTasks,
+} from "./lib/crowdin";
 import log from "./utils/logging";
 
-interface DeleteBranchOptions {
+export interface DeleteBranchOptions {
   branchName: string;
+  deleteTasks?: boolean;
 }
 
-export default async (options: DeleteBranchOptions) => {
+export default async ({
+  branchName,
+  deleteTasks = false,
+}: DeleteBranchOptions) => {
   log.info("Deleting branch from Crowdin");
 
   try {
-    // Delete any open tasks for this branch
-    const tasks = await listTasks();
+    if (deleteTasks) {
+      const branches = await listBranches(branchName);
+      const tasks = await listTasks({ branchId: branches.data[0].data.id });
 
-    // Iterate over tasks and delete any where the task name includes the branch name
-    for await (const task of tasks.data) {
-      if (task?.data?.description?.includes(options.branchName)) {
-        await deleteTask(task.data.id);
-      }
+      await Promise.allSettled(
+        tasks.data.map(task => deleteTask(task.data.id))
+      ).then(results =>
+        results.forEach(result => {
+          if (result.status === "rejected") {
+            log.error(result.reason);
+          }
+        })
+      );
     }
 
-    await deleteBranch(options.branchName);
+    await deleteBranch(branchName);
     log.success("Branch deleted");
   } catch (error) {
     log.error(error as string);

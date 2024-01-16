@@ -48,7 +48,7 @@ export function isCommonErrorResponse(
   return (response as CommonErrorResponse).error !== undefined;
 }
 
-const listBranches = (
+export const listBranches = (
   branchName: string
 ): Promise<ResponseList<SourceFilesModel.Branch>> => {
   return sourceFilesApi.listProjectBranches(CROWDIN_PROJECT_ID, branchName);
@@ -196,10 +196,13 @@ export const exportFile = async (
   return axios.get(translation.data.url);
 };
 
-export const listTasks = (): Promise<ResponseList<TasksModel.Task>> => {
+export const listTasks = (options?: {
+  branchId: number;
+}): Promise<ResponseList<TasksModel.Task>> => {
   return tasksApi.listTasks(CROWDIN_PROJECT_ID, {
     limit: 500,
     status: TasksModel.Status.TODO,
+    ...(options || {}),
   });
 };
 

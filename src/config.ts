@@ -18,7 +18,9 @@ const { stdout } = shell.exec("git rev-parse --abbrev-ref HEAD | tr / -", {
   silent: true,
 });
 const branch =
-  process.env.NODE_ENV !== "test" ? stdout.replace("\n", "") : "test-branch";
+  process.env.NODE_ENV !== "test"
+    ? stdout.replace("\n", "")
+    : "mock-branch-name";
 const WORKING_DIR =
   process.env.NODE_ENV !== "test" ? process.cwd() : `${process.cwd()}/tests`;
 const INTL_DIR = `${WORKING_DIR}/intl`;

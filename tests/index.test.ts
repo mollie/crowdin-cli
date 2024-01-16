@@ -7,6 +7,8 @@ import collect from "../src/collect";
 import download from "../src/download";
 import upload from "../src/upload";
 import deleteBranch from "../src/delete-branch";
+import preTranslate from "../src/pre-translate";
+import createTasks from "../src/create-tasks";
 import { sync } from "mkdirp";
 
 jest.mock("@crowdin/crowdin-api-client", () => ({
@@ -21,6 +23,12 @@ jest.mock("@crowdin/crowdin-api-client", () => ({
     translationsApi: {
       exportProjectTranslation: jest.fn().mockResolvedValue({
         data: { url: "https://example.com/mock.json" },
+      }),
+      applyPreTranslation: jest.fn().mockResolvedValue({
+        data: { id: 234234 },
+      }),
+      preTranslationStatus: jest.fn().mockResolvedValue({
+        data: { status: "finished" },
       }),
     },
     sourceFilesApi: {
@@ -37,6 +45,24 @@ jest.mock("@crowdin/crowdin-api-client", () => ({
         data: { id: 234234, name: "mock-branch-name" },
       }),
       createFile: jest.fn().mockResolvedValue({
+        data: { id: 234234 },
+      }),
+      deleteBranch: jest.fn(),
+    },
+    tasksApi: {
+      listTasks: jest.fn().mockResolvedValue({
+        data: [
+          {
+            data: {
+              id: 234234,
+              description: "DO NOT CHANGE: mock-branch-name (nl)",
+              fileIds: [234234],
+            },
+          },
+        ],
+      }),
+      deleteTask: jest.fn(),
+      createTask: jest.fn().mockResolvedValue({
         data: { id: 234234 },
       }),
     },
@@ -93,6 +119,20 @@ jest.mock("../src/delete-branch", () => {
   };
 });
 
+jest.mock("../src/pre-translate", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(jest.requireActual("../src/pre-translate").default),
+  };
+});
+
+jest.mock("../src/create-tasks", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(jest.requireActual("../src/create-tasks").default),
+  };
+});
+
 const mockGlob = "tests/fixtures/**/*.ts*";
 
 describe("CLI", () => {
@@ -112,9 +152,10 @@ describe("CLI", () => {
     expect(upload).toHaveBeenCalledWith(
       expect.objectContaining({
         translationsFile: config.TRANSLATIONS_FILE,
-        branchName: "test-branch",
+        branchName: "mock-branch-name",
       })
     );
+
     await program([
       "node",
       "test",
@@ -131,6 +172,30 @@ describe("CLI", () => {
     );
     expect(collect).toHaveBeenCalledTimes(2);
     expect(upload).toHaveBeenCalledTimes(2);
+
+    expect(preTranslate).not.toHaveBeenCalled();
+    expect(createTasks).not.toHaveBeenCalled();
+  });
+
+  it("correctly handles `upload` command with pre-translate and create-tasks options", async () => {
+    await program([
+      "node",
+      "test",
+      "upload",
+      mockGlob,
+      "--pre-translate",
+      "--create-tasks",
+    ]);
+    expect(collect).toHaveBeenCalledTimes(1);
+    expect(upload).toHaveBeenCalledTimes(1);
+    expect(preTranslate).toHaveBeenCalledTimes(1);
+    expect(createTasks).toHaveBeenCalledTimes(1);
+  });
+
+  it("correctly handles `collect` command", async () => {
+    await program(["node", "test", "collect", mockGlob]);
+    expect(collect).toHaveBeenCalledTimes(1);
+    expect(collect).toHaveBeenCalledWith(mockGlob);
   });
 
   it("correctly handles `download` command", async () => {
@@ -156,12 +221,29 @@ describe("CLI", () => {
   });
 
   it("correctly handles `delete-branch` command", async () => {
+    const { tasksApi } = new CrowdinApiClient({
+      token: config.CROWDIN_PERSONAL_ACCESS_TOKEN,
+    });
+
     await program(["node", "test", "delete-branch"]);
     expect(deleteBranch).toHaveBeenCalledWith(
       expect.objectContaining({
         branchName: config.BRANCH_NAME,
       })
     );
+    expect(tasksApi.listTasks).not.toHaveBeenCalled();
+    expect(tasksApi.deleteTask).not.toHaveBeenCalled();
+
+    await program(["node", "test", "delete-branch", "--delete-tasks"]);
+    expect(deleteBranch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        branchName: config.BRANCH_NAME,
+        deleteTasks: true,
+      })
+    );
+    expect(tasksApi.listTasks).toHaveBeenCalled();
+    expect(tasksApi.deleteTask).toHaveBeenCalled();
+
     await program([
       "node",
       "test",
@@ -174,7 +256,7 @@ describe("CLI", () => {
         branchName: "custom-branch-name",
       })
     );
-    expect(deleteBranch).toHaveBeenCalledTimes(2);
+    expect(deleteBranch).toHaveBeenCalledTimes(3);
   });
 });
 

@@ -2,13 +2,29 @@ import { Command, Option } from "commander";
 import upload from "./upload";
 import download from "./download";
 import collect from "./collect";
-import deleteBranch from "./delete-branch";
+import deleteBranch, { DeleteBranchOptions } from "./delete-branch";
 import config from "./config";
+import createTasks, { CreateTasksOptions } from "./create-tasks";
+import preTranslate from "./pre-translate";
 
 class BranchNameOption extends Option {
   constructor(description: string) {
     super("-b, --branch-name [string]", description);
     this.default(config.BRANCH_NAME);
+  }
+}
+
+class PreTranslateOption extends Option {
+  constructor(description: string) {
+    super("-p, --pre-translate", description);
+    this.default(false);
+  }
+}
+
+class DeleteTasksOption extends Option {
+  constructor(description: string) {
+    super("-p, --delete-tasks", description);
+    this.default(false);
   }
 }
 
@@ -29,13 +45,46 @@ const main = async (argv: string[]) => {
         "the Crowdin branch where to sync the translations to"
       )
     )
-    .action(async (glob: string, options: { branchName: string }) => {
-      await collect(glob);
-      await upload({
-        translationsFile: config.TRANSLATIONS_FILE,
-        branchName: options.branchName,
-      });
-    });
+    .addOption(new Option("-t, --create-tasks", "type of tasks to create"))
+    .addOption(
+      new PreTranslateOption(
+        "whether to generate pre-translations for the uploaded files"
+      )
+    )
+    .action(
+      async (
+        glob: string,
+        options: Pick<CreateTasksOptions, "branchName" | "type"> & {
+          preTranslate: boolean;
+          createTasks: boolean;
+        }
+      ) => {
+        await collect(glob);
+
+        const result = await upload({
+          translationsFile: config.TRANSLATIONS_FILE,
+          branchName: options.branchName,
+          clearOnUpdate: options.preTranslate,
+        });
+
+        if (!result || !result.fileId) {
+          return;
+        }
+
+        if (options.preTranslate) {
+          await preTranslate(result.fileId);
+        }
+
+        if (options.createTasks) {
+          await createTasks({
+            branchName: options.branchName,
+            fileId: result.fileId,
+            languages: config.CROWDIN_LANGUAGES,
+            type: "proofread",
+          });
+        }
+      }
+    );
 
   program
     .command("collect <glob>")
@@ -69,10 +118,9 @@ const main = async (argv: string[]) => {
     .command("delete-branch")
     .description("clean up branches in Crowdin")
     .addOption(new BranchNameOption("the Crowdin branch to be deleted"))
-    .action(async (options: { branchName: string }) => {
-      await deleteBranch({
-        branchName: options.branchName,
-      });
+    .addOption(new DeleteTasksOption("whether to delete any associated tasks"))
+    .action(async (options: DeleteBranchOptions) => {
+      await deleteBranch(options);
     });
 
   await program.parseAsync(argv);

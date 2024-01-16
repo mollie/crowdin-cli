@@ -1,50 +1,60 @@
 import axios, { AxiosResponse } from "axios";
 import CrowdinApiClient, {
   CommonErrorResponse,
-  Credentials,
   SourceFilesModel,
   UploadStorageModel,
   ResponseList,
   ResponseObject,
   ValidationErrorResponse,
+  TasksModel,
   Error,
+  TranslationsModel,
 } from "@crowdin/crowdin-api-client";
 import chalk from "chalk";
 import fs from "fs";
 import config from "../config";
 import { CrowdinResponse, ExportFileResponse } from "../types";
 
-const { CROWDIN_PERSONAL_ACCESS_TOKEN, CROWDIN_PROJECT_ID, FILE_NAME } = config;
+const {
+  CROWDIN_PERSONAL_ACCESS_TOKEN,
+  CROWDIN_PROJECT_ID,
+  FILE_NAME,
+  DEEPL_ENGINE_ID,
+  DEEPL_SUPPORTED_LANGUAGES,
+} = config;
 
-const credentials: Credentials = {
-  token: CROWDIN_PERSONAL_ACCESS_TOKEN,
-};
+export const CrowdinType = TasksModel.Type;
 
 const {
   translationsApi,
   sourceFilesApi,
   uploadStorageApi,
-} = new CrowdinApiClient(credentials);
+  tasksApi,
+} = new CrowdinApiClient({
+  token: CROWDIN_PERSONAL_ACCESS_TOKEN,
+});
 
-export const unwrapValidationErrorResponse = (
-  response: ValidationErrorResponse
+export const unwrapErrorResponse = (
+  response: CommonErrorResponse | ValidationErrorResponse
 ): Error => {
-  return response?.errors[0]?.error?.errors[0];
+  return isCommonErrorResponse(response)
+    ? response?.error
+    : response?.errors?.[0]?.error?.errors[0];
 };
 
-export const isCommonErrorResponse = (
-  response: CrowdinResponse<any>
-): response is CommonErrorResponse => {
+export function isCommonErrorResponse(
+  response: CrowdinResponse<unknown> | ValidationErrorResponse
+): response is CommonErrorResponse {
   return (response as CommonErrorResponse).error !== undefined;
-};
+}
 
-const listBranches = (
+export const listBranches = (
   branchName: string
 ): Promise<ResponseList<SourceFilesModel.Branch>> => {
   return sourceFilesApi.listProjectBranches(CROWDIN_PROJECT_ID, branchName);
 };
 
-const listFiles = (
+export const listFiles = (
   branchId: number
 ): Promise<ResponseList<SourceFilesModel.File>> => {
   return sourceFilesApi.listProjectFiles(CROWDIN_PROJECT_ID, branchId);
@@ -64,10 +74,7 @@ export const createBranch = (
   });
 };
 
-export const deleteBranch = async (branchName: string): Promise<void> => {
-  const branches = await listBranches(branchName);
-  const branchId = branches.data[0].data.id;
-
+export const deleteBranch = async (branchId: number): Promise<void> => {
   return sourceFilesApi.deleteBranch(CROWDIN_PROJECT_ID, branchId);
 };
 
@@ -86,10 +93,61 @@ export const createFile = async (
   });
 };
 
-export const updateOrRestoreFile = async (
-  branchName: string,
-  file: fs.ReadStream
-): Promise<ResponseObject<SourceFilesModel.File> | CommonErrorResponse> => {
+export const applyPreTranslations = async (fileId: number) => {
+  if (!DEEPL_ENGINE_ID) {
+    throw new Error(
+      "To apply pre-translations, please set the CROWDIN_DEEPL_ENGINE_ID variable in your .env file."
+    );
+  }
+
+  if (DEEPL_SUPPORTED_LANGUAGES.length === 0) {
+    throw new Error(
+      "To apply pre-translations, please set the CROWDIN_DEEPL_SUPPORTED_LANGUAGES variable in your .env file."
+    );
+  }
+
+  const preTranslation = await translationsApi.applyPreTranslation(
+    CROWDIN_PROJECT_ID,
+    {
+      languageIds: DEEPL_SUPPORTED_LANGUAGES,
+      fileIds: [fileId],
+      method: TranslationsModel.Method.MT,
+      engineId: DEEPL_ENGINE_ID,
+    }
+  );
+
+  return waitForPreTranslation(preTranslation.data.identifier);
+};
+
+const waitForPreTranslation = async (
+  preTranslationId: string
+): Promise<void> => {
+  const preTranslationStatus = await translationsApi.preTranslationStatus(
+    CROWDIN_PROJECT_ID,
+    preTranslationId
+  );
+
+  if (preTranslationStatus.data.status === "finished") {
+    return;
+  }
+
+  return new Promise(resolve => {
+    setTimeout(async () => {
+      await waitForPreTranslation(preTranslationId);
+      resolve();
+    }, 1000);
+  });
+};
+
+export const updateOrRestoreFile = async ({
+  branchName,
+  file,
+  clearTranslationsAndApprovals = false,
+}: {
+  branchName: string;
+  file: fs.ReadStream;
+  clearTranslationsAndApprovals?: boolean;
+}): Promise<ResponseObject<SourceFilesModel.File> | CommonErrorResponse> => {
   const storage = await addStorage(file);
   const branches = await listBranches(branchName);
   const branchId = branches?.data[0]?.data?.id;
@@ -110,7 +168,9 @@ export const updateOrRestoreFile = async (
 
   return sourceFilesApi.updateOrRestoreFile(CROWDIN_PROJECT_ID, fileId, {
     storageId: storage.data.id,
-    updateOption: SourceFilesModel.UpdateOption.KEEP_TRANSLATIONS,
+    updateOption: clearTranslationsAndApprovals
+      ? SourceFilesModel.UpdateOption.CLEAR_TRANSLATIONS_AND_APPROVALS
+      : SourceFilesModel.UpdateOption.KEEP_TRANSLATIONS,
   });
 };
 
@@ -131,4 +191,34 @@ export const exportFile = async (
   );
 
   return axios.get(translation.data.url);
+};
+
+export const listTasks = (options?: {
+  branchId: number;
+}): Promise<ResponseList<TasksModel.Task>> => {
+  return tasksApi.listTasks(CROWDIN_PROJECT_ID, {
+    limit: 500,
+    status: TasksModel.Status.TODO,
+    ...(options || {}),
+  });
+};
+
+export const createTask = async (
+  title: string,
+  fileIds: number[],
+  languageId: string,
+  type: TasksModel.Type,
+  description?: string
+): Promise<ResponseObject<TasksModel.Task>> => {
+  return tasksApi.addTask(CROWDIN_PROJECT_ID, {
+    title,
+    fileIds,
+    languageId,
+    type,
+    description,
+  });
+};
+
+export const deleteTask = async (taskId: number) => {
+  return tasksApi.deleteTask(CROWDIN_PROJECT_ID, taskId);
 };

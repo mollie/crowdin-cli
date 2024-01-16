@@ -26,7 +26,7 @@ export default async ({ branchName, deleteTasks }: DeleteBranchOptions) => {
       await Promise.allSettled(
         tasks.data
           .filter(task => {
-            return task.data.fileIds.every(fileId =>
+            return task.data.fileIds.some(fileId =>
               files.data.some(file => file.data.id === fileId)
             );
           })

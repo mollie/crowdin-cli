@@ -141,12 +141,14 @@ describe("CLI", () => {
   });
 
   it("correctly handles `collect` command", async () => {
+    jest.spyOn(fs, "readFileSync").mockReturnValueOnce("");
     await program(["node", "test", "collect", mockGlob]);
     expect(collect).toHaveBeenCalledTimes(1);
     expect(collect).toHaveBeenCalledWith(mockGlob);
   });
 
   it("correctly handles `upload` command", async () => {
+    jest.spyOn(fs, "readFileSync").mockReturnValueOnce("");
     await program(["node", "test", "upload", mockGlob]);
     expect(collect).toHaveBeenCalledWith(mockGlob);
     expect(upload).toHaveBeenCalledWith(
@@ -178,6 +180,7 @@ describe("CLI", () => {
   });
 
   it("correctly handles `upload` command with pre-translate and create-tasks options", async () => {
+    jest.spyOn(fs, "readFileSync").mockReturnValueOnce("");
     await program([
       "node",
       "test",
@@ -192,13 +195,8 @@ describe("CLI", () => {
     expect(createTasks).toHaveBeenCalledTimes(1);
   });
 
-  it("correctly handles `collect` command", async () => {
-    await program(["node", "test", "collect", mockGlob]);
-    expect(collect).toHaveBeenCalledTimes(1);
-    expect(collect).toHaveBeenCalledWith(mockGlob);
-  });
-
   it("correctly handles `download` command", async () => {
+    jest.spyOn(fs, "readFileSync").mockReturnValueOnce("");
     sync(`${config.INTL_DIR}`);
     fs.writeFileSync(`${config.INTL_DIR}/english.source.json`, "");
 

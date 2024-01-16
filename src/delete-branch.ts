@@ -16,11 +16,16 @@ export default async ({ branchName, deleteTasks }: DeleteBranchOptions) => {
   log.info("Deleting branch from Crowdin");
 
   const branches = await listBranches(branchName);
+
+  if (branches.data.length === 0) {
+    return log.error(`Couldn’t find a branch with the name: "${branchName}"`);
+  }
+
   const branchId = branches.data[0].data.id;
-  const files = await listFiles(branchId);
 
   try {
     if (deleteTasks) {
+      const files = await listFiles(branchId);
       const tasks = await listTasks({ branchId });
 
       await Promise.allSettled(
@@ -41,7 +46,7 @@ export default async ({ branchName, deleteTasks }: DeleteBranchOptions) => {
     }
 
     await deleteBranch(branchId);
-    log.success("Branch deleted");
+    log.success(`Deleted branch: ${branchName} (${branchId})`);
   } catch (error) {
     log.error(error as string);
   }

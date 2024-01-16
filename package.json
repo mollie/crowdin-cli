@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0",
+  "version": "3.2.0",
   "license": "MIT",
   "name": "@mollie/crowdin-cli",
   "author": {
@@ -57,9 +57,12 @@
     "chalk": "^4.0.0",
     "commander": "^7.0.0",
     "dotenv": "^8.2.0",
-    "glob": "^10.3.10",
+    "fast-glob": "^3.3.2",
     "mkdirp": "^1.0.4",
     "shelljs": "^0.8.5"
+  },
+  "peerDependencies": {
+    "prettier": "^3.2.2"
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",

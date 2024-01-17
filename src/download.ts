@@ -89,7 +89,7 @@ export default async (options: DownloadOptions) => {
     })
   );
 
-  prettify(`${options.translationsDir}/*.+(${fileExtension})`);
+  await prettify(`${options.translationsDir}/*.${fileExtension}`);
 
   log.success("Translations updated");
 };

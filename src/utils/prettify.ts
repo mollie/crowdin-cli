@@ -19,11 +19,12 @@ const prettify = async (globPattern: string) => {
     const files = await fg.glob(globPattern);
 
     for (const file of files) {
+      const { inferredParser } = prettier.getFileInfo.sync(file);
       const data = fs.readFileSync(file, "utf-8");
       try {
         const pretty = await prettier.format(data, {
           ...config,
-          parser: "typescript",
+          parser: (inferredParser as prettier.BuiltInParserName) || "babel",
         });
         fs.writeFileSync(file, pretty);
         log.success(`Prettified ${file}`);

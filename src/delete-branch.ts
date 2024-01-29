@@ -34,7 +34,7 @@ export default async ({
   const branchId = branches?.data[0].data.id;
 
   if (!branchId) {
-    return log.error(`Error determining the id ID for branch: "${branchName}"`);
+    return log.error(`Error determining the ID for branch: "${branchName}"`);
   }
 
   try {

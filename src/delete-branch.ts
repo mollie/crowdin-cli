@@ -5,6 +5,7 @@ import {
   listFiles,
   listTasks,
 } from "./lib/crowdin";
+import { getCrowdinBranchName } from "./utils/get-crowdin-branch-name";
 import log from "./utils/logging";
 
 export interface DeleteBranchOptions {
@@ -12,16 +13,29 @@ export interface DeleteBranchOptions {
   deleteTasks?: boolean;
 }
 
-export default async ({ branchName, deleteTasks }: DeleteBranchOptions) => {
+export default async ({
+  branchName: gitBranchName,
+  deleteTasks,
+}: DeleteBranchOptions) => {
   log.info("Deleting branch from Crowdin");
+  const branchName = getCrowdinBranchName(gitBranchName);
+  let branches = null;
 
-  const branches = await listBranches(branchName);
+  try {
+    branches = await listBranches(branchName);
+  } catch (error) {
+    return log.error("Error while fetching branches from Crowdin");
+  }
 
-  if (branches.data.length === 0) {
+  if (branches?.data.length === 0) {
     return log.error(`Couldn’t find a branch with the name: "${branchName}"`);
   }
 
-  const branchId = branches.data[0].data.id;
+  const branchId = branches?.data[0].data.id;
+
+  if (!branchId) {
+    return log.error(`Error determining the id ID for branch: "${branchName}"`);
+  }
 
   try {
     if (deleteTasks) {

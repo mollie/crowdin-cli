@@ -337,7 +337,7 @@ describe("Handlers", () => {
 
 describe("Utils", () => {
   test("getCrowdinBranchName()", () => {
-    expect(getCrowdinBranchName("master")).toBe("master");
+    expect(getCrowdinBranchName("main")).toBe("main");
     expect(getCrowdinBranchName("branch-name")).toBe("branch-name");
     expect(getCrowdinBranchName("feature/branch-name")).toBe(
       "feature-branch-name"

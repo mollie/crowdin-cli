@@ -9,6 +9,7 @@ import upload from "../src/upload";
 import deleteBranch from "../src/delete-branch";
 import preTranslate from "../src/pre-translate";
 import createTasks from "../src/create-tasks";
+import { getCrowdinBranchName } from "../src/utils/get-crowdin-branch-name";
 import { sync } from "mkdirp";
 
 jest.mock("@crowdin/crowdin-api-client", () => ({
@@ -331,5 +332,15 @@ describe("Handlers", () => {
     });
     const file = fs.readFileSync(`${config.TRANSLATIONS_DIR}/nl.js`).toString();
     expect(file).toMatchSnapshot();
+  });
+});
+
+describe("Utils", () => {
+  test("getCrowdinBranchName()", () => {
+    expect(getCrowdinBranchName("main")).toBe("main");
+    expect(getCrowdinBranchName("branch-name")).toBe("branch-name");
+    expect(getCrowdinBranchName("feature/branch-name")).toBe(
+      "feature-branch-name"
+    );
   });
 });

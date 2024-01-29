@@ -18,7 +18,7 @@ export default async ({ branchName, deleteTasks }: DeleteBranchOptions) => {
   const branches = await listBranches(branchName);
 
   if (branches.data.length === 0) {
-    return log.error(`Couldn’t find a branch with the name: "${branchName}"`);
+    return log.info(`Couldn’t find a branch with the name: "${branchName}"`);
   }
 
   const branchId = branches.data[0].data.id;

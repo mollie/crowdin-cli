@@ -19,7 +19,7 @@ const prettify = async (globPattern: string) => {
     const files = await fg.glob(globPattern);
 
     for (const file of files) {
-      const { inferredParser } = prettier.getFileInfo.sync(file);
+      const { inferredParser } = await prettier.getFileInfo(file);
       const data = fs.readFileSync(file, "utf-8");
       try {
         const pretty = await prettier.format(data, {
@@ -32,8 +32,9 @@ const prettify = async (globPattern: string) => {
         log.error(`Something went wrong while prettifying the file: ${file}`);
       }
     }
-  } catch {
-    log.error("No files found, check your glob pattern");
+  } catch (error) {
+    log.error("Error while prettifying files");
+    console.error(error);
     process.exit(1);
   }
 };

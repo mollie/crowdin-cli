@@ -7,11 +7,14 @@ import {
 } from "./lib/crowdin";
 import { getCrowdinBranchName } from "./utils/get-crowdin-branch-name";
 import log from "./utils/logging";
+import { TasksModel, ResponseObject } from "@crowdin/crowdin-api-client";
 
 export interface DeleteBranchOptions {
   branchName: string;
   deleteTasks?: boolean;
 }
+
+const taskLimit: number = 500;
 
 export default async ({
   branchName: gitBranchName,
@@ -19,6 +22,10 @@ export default async ({
 }: DeleteBranchOptions) => {
   log.info("Deleting branch from Crowdin");
   const branchName = getCrowdinBranchName(gitBranchName);
+  if (branchName === "master") {
+    return log.error("Cannot delete the master branch");
+  }
+
   let branches = null;
 
   try {
@@ -39,17 +46,28 @@ export default async ({
 
   try {
     if (deleteTasks) {
+      log.info("Deleting tasks");
       const files = await listFiles(branchId);
-      const tasks = await listTasks({ branchId });
+      if (files?.data.length !== 1) {
+        return log.error(`Expected 1 file, found ${files?.data.length}`);
+      }
+
+      let tasks: ResponseObject<TasksModel.Task>[] = [];
+      for (let i = 0; tasks.length >= i * taskLimit; i++) {
+        const moreTasks = await listTasks(i * taskLimit, taskLimit);
+        tasks = tasks.concat(moreTasks.data);
+      }
 
       await Promise.allSettled(
-        tasks.data
-          .filter(task => {
-            return task.data.fileIds.some(fileId =>
-              files.data.some(file => file.data.id === fileId)
+        tasks
+          .filter(task => task.data.fileIds.includes(files.data[0].data.id))
+          .map(task => {
+            log.info(
+              `Deleting task: ${task.data.title} - ${task.data.targetLanguageId}`
             );
+
+            return deleteTask(task.data.id);
           })
-          .map(task => deleteTask(task.data.id))
       ).then(results =>
         results.forEach(result => {
           if (result.status === "rejected") {

@@ -23,9 +23,15 @@ export interface CreateTasksOptions {
 export default async (options: CreateTasksOptions) => {
   log.info("Creating tasks...");
 
-  const branches = await listBranches(options.branchName);
-  const branchId = branches.data[0].data.id;
-  const tasks = await listTasks({ branchId });
+  let branches, branchId, tasks;
+  try {
+    branches = await listBranches(options.branchName);
+    branchId = branches.data[0].data.id;
+    tasks = await listTasks({ branchId });
+  } catch (error) {
+    log.error(JSON.stringify(error));
+    throw error;
+  }
 
   await Promise.allSettled(
     tasks.data

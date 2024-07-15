@@ -193,13 +193,13 @@ export const exportFile = async (
   return axios.get(translation.data.url);
 };
 
-export const listTasks = (options?: {
-  branchId: number;
-}): Promise<ResponseList<TasksModel.Task>> => {
+export const listTasks = (
+  offset: number = 0,
+  limit: number = 500
+): Promise<ResponseList<TasksModel.Task>> => {
   return tasksApi.listTasks(CROWDIN_PROJECT_ID, {
-    limit: 500,
-    status: TasksModel.Status.TODO,
-    ...(options || {}),
+    limit: limit,
+    offset: offset,
   });
 };
 

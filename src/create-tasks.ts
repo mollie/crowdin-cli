@@ -1,13 +1,14 @@
 import {
   CommonErrorResponse,
+  TasksModel,
   ValidationErrorResponse,
+  ResponseObject,
 } from "@crowdin/crowdin-api-client";
 import {
   CrowdinType,
   createTask,
   deleteTask,
   isCommonErrorResponse,
-  listBranches,
   listTasks,
   unwrapErrorResponse,
 } from "./lib/crowdin";
@@ -20,21 +21,24 @@ export interface CreateTasksOptions {
   type: "proofread" | "translate";
 }
 
+const taskLimit: number = 500;
+
 export default async (options: CreateTasksOptions) => {
   log.info("Creating tasks...");
 
-  let branches, branchId, tasks;
+  let tasks: ResponseObject<TasksModel.Task>[] = [];
   try {
-    branches = await listBranches(options.branchName);
-    branchId = branches.data[0].data.id;
-    tasks = await listTasks({ branchId });
+    for (let i = 0; tasks.length >= i * taskLimit; i++) {
+      const moreTasks = await listTasks(i * taskLimit, taskLimit);
+      tasks = tasks.concat(moreTasks.data);
+    }
   } catch (error) {
     log.error(JSON.stringify(error));
     throw error;
   }
 
   await Promise.allSettled(
-    tasks.data
+    tasks
       .filter(task => task.data.fileIds.includes(options.fileId))
       .map(task => deleteTask(task.data.id))
   );
